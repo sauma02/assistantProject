@@ -27,6 +27,7 @@ public class Candidato {
     private String id;
     private String Nombre;
     private String correo;
+    private String contacto;
     private String fechaNacimiento;
     @OneToMany
     private List<Archivo> archivos;
@@ -37,10 +38,11 @@ public class Candidato {
     public Candidato() {
     }
 
-    public Candidato(String id, String Nombre, String correo, String fechaNacimiento, List<Archivo> archivos, List<Usuario> equipo) {
+    public Candidato(String id, String Nombre, String correo, String contacto, String fechaNacimiento, List<Archivo> archivos, List<Usuario> equipo) {
         this.id = id;
         this.Nombre = Nombre;
         this.correo = correo;
+        this.contacto = contacto;
         this.fechaNacimiento = fechaNacimiento;
         this.archivos = archivos;
         this.equipo = equipo;
@@ -48,8 +50,10 @@ public class Candidato {
 
     @Override
     public String toString() {
-        return "Candidato{" + "id=" + id + ", Nombre=" + Nombre + ", correo=" + correo + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
+        return "Candidato{" + "id=" + id + ", Nombre=" + Nombre + ", correo=" + correo + ", contacto=" + contacto + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
     }
+
+   
     
     
     

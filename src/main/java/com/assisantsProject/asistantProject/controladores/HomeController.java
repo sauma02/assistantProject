@@ -4,7 +4,10 @@
  */
 package com.assisantsProject.asistantProject.controladores;
 
+
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  *
@@ -12,5 +15,11 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class HomeController {
+    
+    @GetMapping("/listaCandidatos")
+    public String listaCandidatos(Model model){
+        
+        return "listaCandidatos";
+    }
     
 }

@@ -4,8 +4,11 @@
  */
 package com.assisantsProject.asistantProject.servicios;
 
+import com.assisantsProject.asistantProject.entidades.Archivo;
 import com.assisantsProject.asistantProject.entidades.Candidato;
 import com.assisantsProject.asistantProject.repositorios.CandidatoRepositorio;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +24,23 @@ public class CandidatoServicio {
     public Candidato registrarCandidato(Candidato candidato){
         candidatoRepositorio.save(candidato);
         return candidato;
+    }
+    public Candidato editarCandidato(Candidato candidato){
+       Optional<Candidato> res =  candidatoRepositorio.findById(candidato.getId());
+       if(res.isPresent()){
+           Candidato canEdit = res.get();
+           canEdit.setCorreo(candidato.getCorreo());
+           canEdit.setArchivos(candidato.getArchivos());
+           canEdit.setEquipo(candidato.getEquipo());
+           canEdit.setNombre(candidato.getNombre());
+           canEdit.setFechaNacimiento(candidato.getFechaNacimiento());
+           candidatoRepositorio.save(canEdit);
+           return canEdit;
+       }else{
+            return null;
+       }
+    }
+    public List<Archivo> mostrarArchivos(Candidato candidato){
+        return candidato.getArchivos();
     }
 }

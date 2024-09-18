@@ -4,10 +4,13 @@
  */
 package com.assisantsProject.asistantProject.servicios;
 
+import org.springframework.stereotype.Service;
+
 /**
  *
  * @author Admin
  */
+@Service
 public class UsuarioServicio {
     
 }
