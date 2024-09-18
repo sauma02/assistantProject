@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,9 +17,11 @@ import lombok.Setter;
  * @author Admin
  */
 @Entity
+
 @Getter
 @Setter
 public class Archivo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -40,6 +43,5 @@ public class Archivo {
     public String toString() {
         return "Archivo{" + "id=" + id + ", fileName=" + fileName + ", fileType=" + fileType + ", ruta=" + ruta + '}';
     }
-    
-    
+
 }

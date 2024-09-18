@@ -8,7 +8,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.List;
 import lombok.Getter;
@@ -27,17 +30,21 @@ public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @NotEmpty(message="esta vacio")
     private String usuario;
+     @NotEmpty(message="esta vacio")
     private String password;
+    @NotEmpty(message="esta vacio")
     private String correo;
-    private Rol rol;
+    @ManyToMany
+    private List<Rol> rol;
     @OneToMany
     private List<Candidato> candidatos;
 
     public Usuario() {
     }
 
-    public Usuario(String id, String usuario, String password, String correo, Rol rol, List<Candidato> candidatos) {
+    public Usuario(String id, String usuario, String password, String correo, List<Rol> rol, List<Candidato> candidatos) {
         this.id = id;
         this.usuario = usuario;
         this.password = password;

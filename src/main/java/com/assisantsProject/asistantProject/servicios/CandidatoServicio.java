@@ -43,4 +43,7 @@ public class CandidatoServicio {
     public List<Archivo> mostrarArchivos(Candidato candidato){
         return candidato.getArchivos();
     }
+    public List<Candidato> listarCandidatos(){
+        return candidatoRepositorio.findAll();
+    }
 }
