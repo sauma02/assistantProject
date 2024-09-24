@@ -23,10 +23,16 @@ public class HomeController {
     @Autowired
     private CandidatoServicio candidatoServicio;
     
+    @GetMapping("/")
+    public String home(Model model){
+        return "home";
+    }
+    
     @GetMapping("/listaCandidatos")
     public String listaCandidatos(Model model){
         List<Candidato> listaCandidatos = candidatoServicio.listarCandidatos();
         model.addAttribute("listaCandidatos", listaCandidatos);
+        System.out.println(listaCandidatos);
         return "listaCandidatos";
     }
     

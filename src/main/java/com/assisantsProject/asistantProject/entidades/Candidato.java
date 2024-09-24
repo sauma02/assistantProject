@@ -4,10 +4,13 @@
  */
 package com.assisantsProject.asistantProject.entidades;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
@@ -28,7 +31,7 @@ public class Candidato {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @NotEmpty(message = "esta vacio")
-    private String Nombre;
+    private String nombre;
     @NotEmpty(message = "esta vacio")
     private String correo;
     @NotEmpty(message = "esta vacio")
@@ -37,18 +40,19 @@ public class Candidato {
     private String wave;
     @NotEmpty(message = "esta vacio")
     private String fechaNacimiento;
-    @NotEmpty(message = "esta vacio")
-    @OneToMany
+   
+    @OneToMany(mappedBy = "candidato", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Archivo> archivos;
     @ManyToOne
+    @JoinColumn(name="asistente")
     private Usuario equipo;
 
     public Candidato() {
     }
 
-    public Candidato(String id, String Nombre, String correo, String contacto, String wave, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
+    public Candidato(String id, String nombre, String correo, String contacto, String wave, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
         this.id = id;
-        this.Nombre = Nombre;
+        this.nombre = nombre;
         this.correo = correo;
         this.contacto = contacto;
         this.wave = wave;
@@ -59,7 +63,10 @@ public class Candidato {
 
     @Override
     public String toString() {
-        return "Candidato{" + "id=" + id + ", Nombre=" + Nombre + ", correo=" + correo + ", contacto=" + contacto + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
+        return "Candidato{" + "id=" + id + ", nombre=" + nombre + ", correo=" + correo + ", contacto=" + contacto + ", wave=" + wave + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
     }
+
+   
+    
 
 }

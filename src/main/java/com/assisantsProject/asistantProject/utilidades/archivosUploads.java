@@ -46,6 +46,7 @@ public class archivosUploads {
                 break;
             case "application/pdf":
                 retorno = true;
+                break;
             default:
                 retorno = false;
                 break;

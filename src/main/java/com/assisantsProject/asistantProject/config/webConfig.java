@@ -26,9 +26,12 @@ public class webConfig implements WebMvcConfigurer {
     }
     @Value("${valor.ruta}")
     private String ruta;
+    @Value("${valor.form}")
+    private String form;
     
     @Override
     public void addResourceHandlers (ResourceHandlerRegistry registry){
+        //registry.addResourceHandler("/formularios/**").addResourceLocations("file: "+this.form);
         registry.addResourceHandler("/uploads/**").addResourceLocations("file: "+this.ruta);
     }
     
