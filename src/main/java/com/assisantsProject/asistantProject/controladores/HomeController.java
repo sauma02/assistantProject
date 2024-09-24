@@ -32,7 +32,7 @@ public class HomeController {
     public String listaCandidatos(Model model){
         List<Candidato> listaCandidatos = candidatoServicio.listarCandidatos();
         model.addAttribute("listaCandidatos", listaCandidatos);
-        System.out.println(listaCandidatos);
+   
         return "listaCandidatos";
     }
     
