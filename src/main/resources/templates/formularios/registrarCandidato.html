@@ -26,6 +26,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <input type="text" th:field="*{contacto}" class="form-control" id="inputName" >
                         <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('contacto')}" th:text="${errors.contacto}"></div>
                 </div>
+                <div class="col-12">
+                    <label for="inputName" class="form-label">Wave(Ingresa la wave que te indicaron): </label>
+                    <input type="text" th:field="*{wave}" class="form-control" id="inputName" >
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('wave')}" th:text="${errors.wave}"></div>
+                </div>
 
                 <div class="col-md-2">
                     <label for="inputName" class="form-label">Fecha de nacimiento(dd/mm/yyyy):</label>

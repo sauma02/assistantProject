@@ -24,16 +24,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </thead>
                 <tbody>
                     <tr th:if="${listaCandidatos == null}">
-                        <td>No hay candidatos</td>
+                        <td colspan="8">No hay candidatos</td>
                     </tr>
-                    <tr th:each="lista : ${listaCantidatos}" >
-
+                    <tr th:each="lista : ${listaCandidatos}">
                         <td th:text="${lista.id}"></td>
                         <td th:text="${lista.nombre}"></td>
                         <td th:text="${lista.correo}"></td>
                         <td th:text="${lista.contacto}"></td>
-
-                        <!-- Condicional para mostrar si hay archivos o no -->
+                        <td th:text="${lista.wave}"></td>
                         <td>
                             <span th:if="${lista.archivos == null}">No hay archivos seleccionados</span>
                             <span th:if="${lista.archivos != null}">
@@ -42,7 +40,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 </ul>
                             </span>
                         </td>
-
                         <td>
                             <span th:if="${lista.equipo == null}">No hay asistentes asignados</span>
                             <span th:if="${lista.equipo != null}">
@@ -56,17 +53,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <button id="downloadZipButton" th:data-candidato="${lista.nombre}">Descargar Archivos</button>
                             <button>Eliminar Archivos</button>
                             <button>Editar candidato</button>
+                            <br>
                         </td>
-
-
                     </tr>
-
                 </tbody>
             </table>
-
-
-
         </main>
+
 
         <footer th:replace="layout/frontEnd :: footer"></footer>
         <div th:replace="layout/frontEnd :: scripts">

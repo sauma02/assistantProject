@@ -36,7 +36,7 @@ public class Candidato {
     private String correo;
     @NotEmpty(message = "esta vacio")
     private String contacto;
-
+    @NotEmpty(message = "esta vacio")
     private String wave;
     @NotEmpty(message = "esta vacio")
     private String fechaNacimiento;
