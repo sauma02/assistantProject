@@ -31,6 +31,7 @@ public class archivosUploads {
             }
         }
     }
+  
     public static boolean validarArchivo(String mime){
         boolean retorno = false;
         

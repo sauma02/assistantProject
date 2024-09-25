@@ -53,7 +53,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </td>
                         <td>
                             <button>Agregar Archivos</button>
-                            <button>Descargar Archivos</button>
+                            <button id="downloadZipButton" th:data-candidato="${lista.nombre}">Descargar Archivos</button>
                             <button>Eliminar Archivos</button>
                             <button>Editar candidato</button>
                         </td>
@@ -69,7 +69,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </main>
 
         <footer th:replace="layout/frontEnd :: footer"></footer>
-        <div th:replace="layout/frontEnd :: scripts"></div>
+        <div th:replace="layout/frontEnd :: scripts">
+            <script>
+                document.getElementById("downloadZipButton").addEventListener("click", function(){
+                    var nombreCandidato = this.getAttribute("data-candidato");
+                    descargarArchivos(nombreCandidato);
+                });
+            </script>
+        </div>
 
 
     </body>

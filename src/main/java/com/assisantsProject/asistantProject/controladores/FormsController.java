@@ -68,7 +68,7 @@ public class FormsController {
                 candidatoServicio.registrarCandidato(candidato);
                 List<Archivo> archivos = new ArrayList<>();
                 for (MultipartFile file : files) {
-                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/");
+                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
 
                     if ("no".equals(nombreArchivo)) {
                         flash.addAttribute("clase", "danger");
