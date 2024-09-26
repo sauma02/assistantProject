@@ -44,33 +44,58 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <span th:if="${lista.equipo == null}">No hay asistentes asignados</span>
                             <span th:if="${lista.equipo != null}">
                                 <ul>
-                                    <li th:each="equipo : ${lista.equipo}" th:text="${equipo.nombre}"></li>
+                                    <li th:each="equipo : ${lista.equipo}" th:text="${equipo.usuario}"></li>
                                 </ul>
                             </span>
                         </td>
                         <td>
-                            <button>Agregar Archivos</button>
-                            <button id="downloadZipButton" th:data-candidato="${lista.nombre}">Descargar Archivos</button>
-                            <button>Eliminar Archivos</button>
-                            <button>Editar candidato</button>
-                            <br>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </main>
+                            <hr>
+                                <button>Agregar Archivos</button>
+                                <a th:href="@{/listaCandidatos/{nombreCandidato}/descargar-archivos(nombreCandidato=${lista.nombre})}" class="btn btn-primary">Descargar Archivos</a>
+                                <button>Eliminar Archivos</button>
+                                <button>Editar candidato</button>
+                                <hr>
+                                    </td>
+                                    </tr>
+                                    </tbody>
+                                    </table>
+                                    </main>
 
 
-        <footer th:replace="layout/frontEnd :: footer"></footer>
-        <div th:replace="layout/frontEnd :: scripts">
-            <script>
-                document.getElementById("downloadZipButton").addEventListener("click", function(){
-                    var nombreCandidato = this.getAttribute("data-candidato");
-                    descargarArchivos(nombreCandidato);
-                });
-            </script>
-        </div>
+                                    <footer th:replace="layout/frontEnd :: footer"></footer>
+                                    <div th:replace="layout/frontEnd :: scripts">
+                                        <script>
+                                            document.getElementById("downloadZipButton").addEventListener("click", function () {
+                                                var nombreCandidato = this.getAttribute("data-candidato");
+                                                descargarArchivos(nombreCandidato);
+                                            });
+                                            function descargarArchivos(nombreCandidato) {
+                                                fetch("/listaCandidatos/" + nombreCandidato + "/descargar-archivos", {
+                                                    method: "GET"
+                                                })
+                                                        .then(response => {
+                                                            if (!response.ok) {
+                                                                throw new Error("Error al descargar archivos");
+                                                            }
+                                                            return response.blob();
+                                                        })
+                                                        .then(blob => {
+                                                            var url = window.URL.createObjectURL(blob);
+                                                            var a = document.createElement('a');
+                                                            a.href = url;
+                                                            a.download = nombreCandidato + "_archivos.zip";
+                                                            document.body.appendChild(a);
+                                                            a.click();
+                                                            a.remove();
+
+                                                        })
+                                                        .catch(error => {
+                                                            console.error("Error: ", error);
+                                                        });
+                                            }
+                                        </script>
+                                    </div>
 
 
-    </body>
-</html>
+                                    </body>
+                                    </html>
