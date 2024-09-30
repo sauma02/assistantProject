@@ -9,93 +9,106 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <body>
         <header th:replace="layout/frontEnd :: header"></header>
         <main>
-            <table border="2" width="1" cellspacing="1" cellpadding="1">
-                <thead>
-                    <tr>
-                        <th>Id: </th>
-                        <th>Nombre: </th>
-                        <th>Correo: </th>
-                        <th>Numero de contacto: </th>
-                        <th>Wave: </th>
-                        <th>Archivos: </th>
-                        <th>Assistant: </th>
-                        <th>Acciones: </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:if="${listaCandidatos == null}">
-                        <td colspan="8">No hay candidatos</td>
-                    </tr>
-                    <tr th:each="lista : ${listaCandidatos}">
-                        <td th:text="${lista.id}"></td>
-                        <td th:text="${lista.nombre}"></td>
-                        <td th:text="${lista.correo}"></td>
-                        <td th:text="${lista.contacto}"></td>
-                        <td th:text="${lista.wave}"></td>
-                        <td>
-                            <span th:if="${lista.archivos == null}">No hay archivos seleccionados</span>
-                            <span th:if="${lista.archivos != null}">
-                                <ul>
-                                    <li th:each="archivo : ${lista.archivos}" th:text="${archivo.fileName}"></li>
-                                </ul>
-                            </span>
-                        </td>
-                        <td>
-                            <span th:if="${lista.equipo == null}">No hay asistentes asignados</span>
-                            <span th:if="${lista.equipo != null}">
-                                <ul>
-                                    <li th:each="equipo : ${lista.equipo}" th:text="${equipo.usuario}"></li>
-                                </ul>
-                            </span>
-                        </td>
-                        <td>
-                            <hr>
-                                <button>Agregar Archivos</button>
-                                <a th:href="@{/listaCandidatos/{nombreCandidato}/descargar-archivos(nombreCandidato=${lista.nombre})}" class="btn btn-primary">Descargar Archivos</a>
-                                <button>Eliminar Archivos</button>
-                                <button>Editar candidato</button>
+            
+                <table id="candidatos" class="display" >
+                    <thead>
+                        <tr>
+                            <th>Id: </th>
+                            <th>Nombre: </th>
+                            <th>Correo: </th>
+                            <th>Numero de contacto: </th>
+                            <th>Wave: </th>
+                            <th>Archivos: </th>
+                            <th>Assistant: </th>
+                            <th>Acciones: </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${listaCandidatos == null}">
+                            <td colspan="8">No hay candidatos</td>
+                        </tr>
+                        <tr th:each="lista : ${listaCandidatos}">
+                            <td th:text="${lista.id}"></td>
+                            <td th:text="${lista.nombre}"></td>
+                            <td th:text="${lista.correo}"></td>
+                            <td th:text="${lista.contacto}"></td>
+                            <td th:text="${lista.wave}"></td>
+                            <td>
+                                <span th:if="${lista.archivos == null}">No hay archivos seleccionados</span>
+                                <span th:if="${lista.archivos != null}">
+                                    <ul>
+                                        <li th:each="archivo : ${lista.archivos}" th:text="${archivo.fileName}"></li>
+                                    </ul>
+                                </span>
+                            </td>
+                            <td>
+                                <span th:if="${lista.equipo == null}">No hay asistentes asignados</span>
+                                <span th:if="${lista.equipo != null}">
+                                    <ul>
+                                        <li th:each="equipo : ${lista.equipo}" th:text="${equipo.usuario}"></li>
+                                    </ul>
+                                </span>
+                            </td>
+                            <td>
                                 <hr>
-                                    </td>
-                                    </tr>
-                                    </tbody>
-                                    </table>
-                                    </main>
+                                    <button>Agregar Archivos</button>
+                                    <a th:href="@{/listaCandidatos/{nombreCandidato}/descargar-archivos(nombreCandidato=${lista.nombre})}" class="btn btn-primary">Descargar Archivos</a>
+                                    <button>Eliminar Archivos</button>
+                                    <button>Editar candidato</button>
+                                    <hr>
+                                        </td>
+                                        </tr>
+                                        </tbody>
+                                        </table>
+                                    
+                                        </main>
 
 
-                                    <footer th:replace="layout/frontEnd :: footer"></footer>
-                                    <div th:replace="layout/frontEnd :: scripts">
-                                        <script>
-                                            document.getElementById("downloadZipButton").addEventListener("click", function () {
-                                                var nombreCandidato = this.getAttribute("data-candidato");
-                                                descargarArchivos(nombreCandidato);
-                                            });
-                                            function descargarArchivos(nombreCandidato) {
-                                                fetch("/listaCandidatos/" + nombreCandidato + "/descargar-archivos", {
-                                                    method: "GET"
-                                                })
-                                                        .then(response => {
-                                                            if (!response.ok) {
-                                                                throw new Error("Error al descargar archivos");
-                                                            }
-                                                            return response.blob();
-                                                        })
-                                                        .then(blob => {
-                                                            var url = window.URL.createObjectURL(blob);
-                                                            var a = document.createElement('a');
-                                                            a.href = url;
-                                                            a.download = nombreCandidato + "_archivos.zip";
-                                                            document.body.appendChild(a);
-                                                            a.click();
-                                                            a.remove();
+                                        <footer th:replace="layout/frontEnd :: footer"></footer>
+                                        <div th:replace="layout/frontEnd :: scripts">
+                                            <script>
+                                                $(document).ready(function () {
+                                                    console.log("loading table");
+                                                    $("#candidatos").DataTable({
+                                                        // Opciones de configuración
+                                                        language: {
+                                                            url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json'
+                                                        }
+                                                    });
+                                                });
 
-                                                        })
-                                                        .catch(error => {
-                                                            console.error("Error: ", error);
-                                                        });
-                                            }
-                                        </script>
-                                    </div>
+                                                document.getElementById("downloadZipButton").addEventListener("click", function () {
+                                                    var nombreCandidato = this.getAttribute("data-candidato");
+                                                    descargarArchivos(nombreCandidato);
+                                                });
+
+                                                function descargarArchivos(nombreCandidato) {
+                                                    fetch("/listaCandidatos/" + nombreCandidato + "/descargar-archivos", {
+                                                        method: "GET"
+                                                    })
+                                                            .then(response => {
+                                                                if (!response.ok) {
+                                                                    throw new Error("Error al descargar archivos");
+                                                                }
+                                                                return response.blob();
+                                                            })
+                                                            .then(blob => {
+                                                                var url = window.URL.createObjectURL(blob);
+                                                                var a = document.createElement('a');
+                                                                a.href = url;
+                                                                a.download = nombreCandidato + "_archivos.zip";
+                                                                document.body.appendChild(a);
+                                                                a.click();
+                                                                a.remove();
+                                                            })
+                                                            .catch(error => {
+                                                                console.error("Error: ", error);
+                                                            });
+                                                }
+                                            </script>
+                                        </div>
 
 
-                                    </body>
-                                    </html>
+
+                                        </body>
+                                        </html>

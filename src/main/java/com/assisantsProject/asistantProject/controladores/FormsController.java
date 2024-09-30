@@ -13,6 +13,9 @@ import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
 import com.assisantsProject.asistantProject.servicios.UsuarioServicio;
 import com.assisantsProject.asistantProject.utilidades.archivosUploads;
 import jakarta.validation.Valid;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,9 +69,13 @@ public class FormsController {
                 return "redirect:/formularios/registrarCandidato";
             } else {
                 candidatoServicio.registrarCandidato(candidato);
+                Path ruta1 = Paths.get(ruta+"archivos/"+candidato.getNombre()+"/");
+                Files.createDirectories(ruta1);
                 List<Archivo> archivos = new ArrayList<>();
                 for (MultipartFile file : files) {
                     String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
+                    
+                    
 
                     if ("no".equals(nombreArchivo)) {
                         flash.addAttribute("clase", "danger");

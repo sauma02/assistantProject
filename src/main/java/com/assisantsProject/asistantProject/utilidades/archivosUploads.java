@@ -21,6 +21,7 @@ public class archivosUploads {
             String nombre = time + archivosUploads.getExtension(file.getContentType());
             try {
                 File imageFile = new File(ruta+nombre);
+                
                 file.transferTo(imageFile);
                 return nombre;
             } catch (IOException e) {
