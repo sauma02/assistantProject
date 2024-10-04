@@ -57,35 +57,22 @@ public class FormsController {
         model.addAttribute("candidato", new Candidato());
         return "formularios/registrarCandidato";  // no .html extension
     }
+
     @PostMapping("/actualizarArchivos")
-    public String actualizarArchivos(@Valid Candidato candidato, BindingResult result, 
-            RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files){
+    public String actualizarArchivos(@Valid Candidato candidato, BindingResult result,
+            RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files) {
         try {
-            
-        
-            if (result.hasErrors()) {
-                Map<String, String> errors = new HashMap<>();
-                result.getFieldErrors().forEach(err -> {
-                    errors.put(err.getField(),
-                            "El campo".concat(err.getField()).concat("").concat(err.getDefaultMessage()));
-                });
-                model.addAttribute("errors", errors);
-                model.addAttribute("candidato", candidato);
-                return "formularios/registrarCandidato";
-            }
+
             if (files.length == 0 || files == null || files[0].isEmpty()) {
                 flash.addAttribute("clase", "danger");
                 flash.addAttribute("mensaje", "No se ha cargado ningun archivo JPG, PNG, JPEG o PDF");
                 return "redirect:/formularios/registrarCandidato";
             } else {
                 Candidato candi = candidatoServicio.listarPorCedula(candidato.getDoc());
-                Path ruta1 = Paths.get(ruta+"archivos/"+candidato.getNombre()+"/");
-                Files.createDirectories(ruta1);
+
                 List<Archivo> archivos = candi.getArchivos();
                 for (MultipartFile file : files) {
                     String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
-                    
-                    
 
                     if ("no".equals(nombreArchivo)) {
                         flash.addAttribute("clase", "danger");
@@ -109,14 +96,24 @@ public class FormsController {
                 flash.addFlashAttribute("clase", "success");
                 flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos");
                 return "redirect:/formularios/archivos_respuesta";
+                //            if (result.hasErrors()) {
+//                Map<String, String> errors = new HashMap<>();
+//                result.getFieldErrors().forEach(err -> {
+//                    errors.put(err.getField(),
+//                            "El campo".concat(err.getField()).concat("").concat(err.getDefaultMessage()));
+//                });
+//                model.addAttribute("errors", errors);
+//                model.addAttribute("candidato", candidato);
+//                return "formularios/registrarCandidato";
+//            }
 
             }
-            } catch (Exception e) {
-                 e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
             flash.addFlashAttribute("clase", "danger");
             flash.addFlashAttribute("mensaje", e.getMessage());
             return "redirect:/formularios/registrarCandidato";
-                
+
         }
     }
 
@@ -125,63 +122,73 @@ public class FormsController {
             @RequestParam("archivos[]") MultipartFile[] files, RedirectAttributes flash, Model model) {
 
         try {
-            
-             if(candidatoServicio.listarPorCedula(candidato.getDoc())!= null){
-                flash.addAttribute("clase", "danger");
-                flash.addAttribute("mensaje", "Esta cedula ya se encuentra registrada, seleccione actualizar");
+            // Validar si la cédula ya está registrada
+            if (candidatoServicio.listarPorCedula(candidato.getDoc()) != null) {
+                flash.addFlashAttribute("clase", "danger");
+                flash.addFlashAttribute("mensaje", "Esta cédula ya se encuentra registrada, seleccione actualizar.");
                 return "redirect:/formularios/registrarCandidato";
-             }
-             if (result.hasErrors()) {
-                Map<String, String> errors = new HashMap<>();
-                result.getFieldErrors().forEach(err -> {
-                    errors.put(err.getField(),
-                            "El campo".concat(err.getField()).concat("").concat(err.getDefaultMessage()));
-                });
-                model.addAttribute("errors", errors);
-                model.addAttribute("candidato", candidato);
-                return "formularios/registrarCandidato";
             }
-            if (files.length == 0 || files == null || files[0].isEmpty()) {
-                flash.addAttribute("clase", "danger");
-                flash.addAttribute("mensaje", "No se ha cargado ningun archivo JPG, PNG, JPEG o PDF");
+
+            // Validar errores en el formulario
+//            if (result.hasErrors()) {
+//                Map<String, String> errors = new HashMap<>();
+//                result.getFieldErrors().forEach(err -> {
+//                    errors.put(err.getField(), "El campo ".concat(err.getField()).concat(" ").concat(err.getDefaultMessage()));
+//                });
+//                model.addAttribute("errors", errors);
+//                model.addAttribute("candidato", candidato);
+//                return "formularios/registrarCandidato";
+//            }
+
+            // Validar archivos
+            if (files == null || files.length == 0 || files[0].isEmpty()) {
+                flash.addFlashAttribute("clase", "danger");
+                flash.addFlashAttribute("mensaje", "No se ha cargado ningún archivo JPG, PNG, JPEG o PDF.");
                 return "redirect:/formularios/registrarCandidato";
-            } else {
-                candidatoServicio.registrarCandidato(candidato);
-                Path ruta1 = Paths.get(ruta+"archivos/"+candidato.getNombre()+"/");
-                Files.createDirectories(ruta1);
-                List<Archivo> archivos = new ArrayList<>();
-                for (MultipartFile file : files) {
-                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
-                    
-                    
+            }
 
-                    if ("no".equals(nombreArchivo)) {
-                        flash.addAttribute("clase", "danger");
-                        flash.addAttribute("mensaje", "El formato no es valido, porfavor solo suba archivos JPG, PNG, JPEG o PDF");
-                        return "redirect:/formularios/registrarCandidato";
-                    }
-                    if (nombreArchivo != null) {
-                        Archivo archivo = new Archivo();
-                        archivo.setFileName(nombreArchivo);
-                        archivo.setFileType(file.getContentType());
-                        archivo.setCandidato(candidato);
-                        archivo.setRuta(this.ruta);
-                        archivoServicio.guardarArchivo(archivo);
-                        archivos.add(archivo);
+            // Registrar candidato en la base de datos
+            candidatoServicio.registrarCandidato(candidato);
 
-                    }
+            // Crear directorio para guardar archivos
+            Path ruta1 = Paths.get(ruta + "archivos/" + candidato.getNombre().trim() + "/");
+            Files.createDirectories(ruta1);
+
+            // Lista para almacenar los archivos procesados
+            List<Archivo> archivos = new ArrayList<>();
+            for (MultipartFile file : files) {
+                // Guardar el archivo en el sistema de archivos
+                String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
+
+                // Verificar si el formato de archivo es válido
+                if ("no".equals(nombreArchivo)) {
+                    flash.addFlashAttribute("clase", "danger");
+                    flash.addFlashAttribute("mensaje", "El formato no es válido. Por favor, suba solo archivos JPG, PNG, JPEG o PDF.");
+                    return "redirect:/formularios/registrarCandidato";
                 }
-                candidato.setArchivos(archivos);
-                candidatoServicio.editarCandidato(candidato); // Actualizar el candidato con los archivos
 
-                flash.addFlashAttribute("clase", "success");
-                flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos");
-                return "redirect:/formularios/archivos_respuesta";
+                // Crear objeto Archivo y asociarlo al candidato
+                if (nombreArchivo != null) {
+                    Archivo archivo = new Archivo();
+                    archivo.setFileName(nombreArchivo);
+                    archivo.setFileType(file.getContentType());
+                    archivo.setCandidato(candidato);
+                    archivo.setRuta(this.ruta);
 
+                    // Guardar el archivo en la base de datos
+                    archivoServicio.guardarArchivo(archivo);
+                    archivos.add(archivo);
+                }
             }
-           
 
-            // Asignar los archivos al candidato
+            // Asignar archivos al candidato y actualizarlo
+            candidato.setArchivos(archivos);
+            candidatoServicio.editarCandidato(candidato);
+
+            flash.addFlashAttribute("clase", "success");
+            flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos.");
+            return "redirect:/formularios/archivos_respuesta";
+
         } catch (Exception e) {
             e.printStackTrace();
             flash.addFlashAttribute("clase", "danger");
@@ -189,8 +196,9 @@ public class FormsController {
             return "redirect:/formularios/registrarCandidato";
         }
     }
+
     @GetMapping("/archivos_respuesta")
-    public String archivosRespuesta(Model model){
+    public String archivosRespuesta(Model model) {
         return "archivos_respuesta";
     }
 

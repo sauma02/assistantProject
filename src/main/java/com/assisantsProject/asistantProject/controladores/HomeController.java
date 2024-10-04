@@ -58,8 +58,8 @@ public class HomeController {
 
     @GetMapping("/listaCandidatos/{nombre}/descargar-archivos")
     public ResponseEntity<Resource> descargarArchivosCandidatos(@PathVariable String nombre) throws IOException {
-        // Normalizar el nombre para usar en la ruta
-        String nombreNormalizado = nombre.replaceAll("[^a-zA-Z0-9\\-\\.\\_]", "_"); // Reemplazar caracteres no válidos
+        // Retain the original name with spaces, just sanitize invalid characters
+        String nombreNormalizado = nombre.replaceAll("[^a-zA-Z0-9\\-\\.\\_\\s]", "").trim(); // Allow spaces
         Path directorioCandidato = Paths.get(this.ruta + "archivos/" + nombreNormalizado);
 
         // Verificar si el directorio existe
@@ -67,7 +67,7 @@ public class HomeController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "El directorio no existe");
         }
 
-        String nombreZip = nombreNormalizado + "_archivos.zip"; // Usar el nombre normalizado
+        String nombreZip = nombreNormalizado + "_archivos.zip"; // Use the name with spaces if present
         Path rutaZip = Files.createTempFile(null, ".zip");
 
         try (ZipOutputStream zipOut = new ZipOutputStream(Files.newOutputStream(rutaZip))) {
@@ -84,7 +84,7 @@ public class HomeController {
                             }
                             zipOut.closeEntry();
                         } catch (IOException e) {
-                            e.printStackTrace(); // Manejar excepciones adecuadamente
+                            e.printStackTrace(); // Handle exceptions properly
                         }
                     });
         }
