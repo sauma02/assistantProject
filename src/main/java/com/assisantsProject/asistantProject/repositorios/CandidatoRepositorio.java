@@ -5,6 +5,7 @@
 package com.assisantsProject.asistantProject.repositorios;
 
 import com.assisantsProject.asistantProject.entidades.Candidato;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CandidatoRepositorio extends JpaRepository<Candidato, String>  {
-    
+    public Optional<Candidato> findByDoc(String cedula);
 }

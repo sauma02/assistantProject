@@ -25,6 +25,17 @@ public class CandidatoServicio {
         candidatoRepositorio.save(candidato);
         return candidato;
     }
+    public Candidato actualizarArchivos(Candidato candidato){
+        Optional<Candidato> res = candidatoRepositorio.findById(candidato.getId());
+        if(res.isPresent()){
+            Candidato canEdito = res.get();
+            canEdito.setArchivos(candidato.getArchivos());
+            candidatoRepositorio.save(canEdito);
+            return canEdito;
+        }else{
+            return null;
+        }
+    }
     public Candidato editarCandidato(Candidato candidato){
        Optional<Candidato> res =  candidatoRepositorio.findById(candidato.getId());
        if(res.isPresent()){
@@ -45,5 +56,14 @@ public class CandidatoServicio {
     }
     public List<Candidato> listarCandidatos(){
         return candidatoRepositorio.findAll();
+    }
+    public Candidato listarPorCedula(String cedula){
+        Optional<Candidato> res = candidatoRepositorio.findByDoc(cedula);
+        if(res.isPresent()){
+            Candidato can = res.get();
+            return can;
+        }else{
+            return null;
+        }
     }
 }

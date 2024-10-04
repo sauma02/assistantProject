@@ -6,17 +6,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
     <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})"></head>
-    <body>
+    <body >
         <header th:replace="layout/frontEnd :: header"></header>
-        <main>
-            
-                <table id="candidatos" class="display" >
+        <main class="container-fluid">
+                
+                <table id="candidatos" class="table table-striped mt-3" >
                     <thead>
                         <tr>
                             <th>Id: </th>
                             <th>Nombre: </th>
                             <th>Correo: </th>
                             <th>Numero de contacto: </th>
+                            <th>Tipo de documento: </th>
+                            <th>Numero de documento: </th>
+                            <th>Fecha de expedicion: </th>
                             <th>Wave: </th>
                             <th>Archivos: </th>
                             <th>Assistant: </th>
@@ -32,6 +35,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <td th:text="${lista.nombre}"></td>
                             <td th:text="${lista.correo}"></td>
                             <td th:text="${lista.contacto}"></td>
+                            <td th:text="${lista.tipoDoc}"></td>
+                            <td th:text="${lista.cedula}"></td>
+                            <td th:text="${lista.fechaExpedicion}"></td>
                             <td th:text="${lista.wave}"></td>
                             <td>
                                 <span th:if="${lista.archivos == null}">No hay archivos seleccionados</span>
@@ -60,53 +66,50 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         </tr>
                                         </tbody>
                                         </table>
-                                    
+                                       
+
                                         </main>
 
 
                                         <footer th:replace="layout/frontEnd :: footer"></footer>
+
                                         <div th:replace="layout/frontEnd :: scripts">
-                                            <script>
-                                                $(document).ready(function () {
-                                                    console.log("loading table");
-                                                    $("#candidatos").DataTable({
-                                                        // Opciones de configuración
-                                                        language: {
-                                                            url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/Spanish.json'
-                                                        }
-                                                    });
-                                                });
 
-                                                document.getElementById("downloadZipButton").addEventListener("click", function () {
-                                                    var nombreCandidato = this.getAttribute("data-candidato");
-                                                    descargarArchivos(nombreCandidato);
-                                                });
-
-                                                function descargarArchivos(nombreCandidato) {
-                                                    fetch("/listaCandidatos/" + nombreCandidato + "/descargar-archivos", {
-                                                        method: "GET"
-                                                    })
-                                                            .then(response => {
-                                                                if (!response.ok) {
-                                                                    throw new Error("Error al descargar archivos");
-                                                                }
-                                                                return response.blob();
-                                                            })
-                                                            .then(blob => {
-                                                                var url = window.URL.createObjectURL(blob);
-                                                                var a = document.createElement('a');
-                                                                a.href = url;
-                                                                a.download = nombreCandidato + "_archivos.zip";
-                                                                document.body.appendChild(a);
-                                                                a.click();
-                                                                a.remove();
-                                                            })
-                                                            .catch(error => {
-                                                                console.error("Error: ", error);
-                                                            });
-                                                }
-                                            </script>
                                         </div>
+                                        <script th:inline="javascript">
+                                            $(document).ready(function () {
+                                                $('#candidatos').DataTable();
+                                            });
+
+                                            document.getElementById("downloadZipButton").addEventListener("click", function () {
+                                                var nombreCandidato = this.getAttribute("data-candidato");
+                                                descargarArchivos(nombreCandidato);
+                                            });
+
+                                            function descargarArchivos(nombreCandidato) {
+                                                fetch("/listaCandidatos/" + nombreCandidato + "/descargar-archivos", {
+                                                    method: "GET"
+                                                })
+                                                        .then(response => {
+                                                            if (!response.ok) {
+                                                                throw new Error("Error al descargar archivos");
+                                                            }
+                                                            return response.blob();
+                                                        })
+                                                        .then(blob => {
+                                                            var url = window.URL.createObjectURL(blob);
+                                                            var a = document.createElement('a');
+                                                            a.href = url;
+                                                            a.download = nombreCandidato + "_archivos.zip";
+                                                            document.body.appendChild(a);
+                                                            a.click();
+                                                            a.remove();
+                                                        })
+                                                        .catch(error => {
+                                                            console.error("Error: ", error);
+                                                        });
+                                            }
+                                        </script>
 
 
 

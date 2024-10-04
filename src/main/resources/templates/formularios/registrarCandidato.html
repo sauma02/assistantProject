@@ -8,9 +8,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
 
     </head>
-    <body>
-        <div>
-            <form th:action="@{/formularios/registrarCandidato}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data">
+    <body class="container">
+        
+        <div id="opciones">
+            <button id="mostrarRegistro" class="btn btn-primary">Registrarme</button>
+            <hr>
+            <button id="mostrarActualizar" class="btn btn-primary">Actualizar archivos</button>
+        </div>
+        
+        <div id="registrar" style="display: none;">
+            <form th:action="@{/formularios/registrarCandidato}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data" >
                 <div class="col-md-6">
                     <label for="inputName" class="form-label">Nombre:</label>
                     <input type="text" th:field="*{nombre}" class="form-control" id="inputName">
@@ -25,6 +32,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <label for="inputName" class="form-label">Contacto:</label>
                     <input type="text" th:field="*{contacto}" class="form-control" id="inputName" >
                         <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('contacto')}" th:text="${errors.contacto}"></div>
+                </div>
+                <div class="col-12">
+                    <label for="inputName" class="form-label">Tipo de documento:</label>
+                    <input type="text" th:field="*{tipoDoc}" class="form-control" id="inputName" >
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
+                </div>
+                <div class="col-12">
+                    <label for="inputName" class="form-label">Numero de cedula:</label>
+                    <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('cedula')}" th:text="${errors.cedula}"></div>
+                </div>
+                <div class="col-12">
+                    <label for="inputName" class="form-label">Fecha de Expedicion:</label>
+                    <input type="text" th:field="*{fechaExpedicion}" class="form-control" id="inputName" >
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaExpedicion')}" th:text="${errors.fechaExpedicion}"></div>
                 </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">Wave(Ingresa la wave que te indicaron): </label>
@@ -59,6 +81,41 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </div>
 
             </form>
+            </div>
+        <div id="actualizar" style="display: none;">
+            <form th:action="@{/formularios/actualizarArchivos}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data">
+                <div class="col-12">
+                    <label for="inputName" class="form-label">Ingresa tu numero de cedula:</label>
+                    <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('cedula')}" th:text="${errors.cedula}"></div>
+                </div>
+                 <div class="col-md-2">
+                    <label for="inputZip" class="form-label">Archivos:</label>
+                    <input type="file" name="archivos[]" class="form-control" id="inputZip" multiple>
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('archivos')}" th:text="${errors.archivos}"></div>
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </div>
+            </form>
+        
+            
         </div>
+        
+            
     </body>
+     <div th:replace="layout/frontEnd :: scripts"></div>
+    <script th:inline="javascript">
+        $(document).ready(function(){
+           $('#mostrarRegistro').on('click', function(){
+               $('#registrar').show();
+               $('#actualizar').hide();
+           }); 
+           $('#mostrarActualizar').on('click', function(){
+               $('#registrar').hide();
+               $('#actualizar').show();
+           }); 
+        });
+        
+    </script>
 </html>
