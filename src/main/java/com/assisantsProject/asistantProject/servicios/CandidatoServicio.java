@@ -25,6 +25,9 @@ public class CandidatoServicio {
 
     @Autowired
     private CandidatoRepositorio candidatoRepositorio;
+    
+    @Autowired
+    private ArchivoServicio archivoServicio;
 
     public Candidato registrarCandidato(Candidato candidato) {
         candidato.setEstado(true);
@@ -43,6 +46,16 @@ public class CandidatoServicio {
             return null;
         }
     }
+    
+    public Candidato listarPorId(String id){
+        Optional<Candidato> res = candidatoRepositorio.findById(id);
+        if(res.isPresent()){
+            Candidato can = res.get();
+            return can;
+        }else{
+            return null;
+        }
+    }
 
     public Candidato editarCandidato(Candidato candidato) {
         Optional<Candidato> res = candidatoRepositorio.findById(candidato.getId());
@@ -58,6 +71,11 @@ public class CandidatoServicio {
         } else {
             return null;
         }
+    }
+    
+    public void eliminarCandidato(Candidato candidato){
+        archivoServicio.eliminarArchivos(candidato.getArchivos());
+        candidatoRepositorio.delete(candidato);
     }
 
     public List<Archivo> mostrarArchivos(Candidato candidato) {
@@ -103,7 +121,7 @@ public class CandidatoServicio {
 
         return reporteProcesado;
     }
-
+   
     public Map<String, Long> obtenerPorEstado() {
         return candidatoRepositorio.findAll().stream()
                 .collect(Collectors.groupingBy(c -> c.isActivo(true) ? "Activo" : "Inactivo",

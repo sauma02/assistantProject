@@ -6,6 +6,7 @@ package com.assisantsProject.asistantProject.servicios;
 
 import com.assisantsProject.asistantProject.entidades.Archivo;
 import com.assisantsProject.asistantProject.repositorios.ArchivoRepositorio;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,10 @@ public class ArchivoServicio {
     public Archivo guardarArchivo(Archivo archivo){
         archivoRepositorio.save(archivo);
         return archivo;
+    }
+    public void eliminarArchivos(List<Archivo> archivos){
+        for (Archivo archivo : archivos) {
+            archivoRepositorio.delete(archivo);
+        }
     }
 }

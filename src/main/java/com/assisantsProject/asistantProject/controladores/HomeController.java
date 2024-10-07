@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -35,8 +36,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 import static org.springframework.web.servlet.function.RequestPredicates.headers;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -50,7 +53,7 @@ public class HomeController {
 
     @Autowired
     private CandidatoServicio candidatoServicio;
-    
+
     @Autowired
     private ExcelServicio excelServicio;
 
@@ -58,7 +61,6 @@ public class HomeController {
     public String home(Model model) {
         return "home";
     }
-     
 
     @GetMapping("/listaCandidatos")
     public String listaCandidatos(Model model) {
@@ -67,23 +69,60 @@ public class HomeController {
 
         return "listaCandidatos";
     }
+    
+    @GetMapping("/eliminarCandidato/{id}")
+    public ResponseEntity<Map<String, String>> eliminarCandidato(@PathVariable("id") String id){
+        Map<String, String> response = new HashMap<>();
+        try {
+            Candidato can = candidatoServicio.listarPorId(id);
+            candidatoServicio.eliminarCandidato(can);
+            response.put("clase", "success");
+            response.put("mensaje", "Éxito al eliminar");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("clase", "error");
+            response.put("mensaje", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/cambiarEstado/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> cambiarEstado(@PathVariable("id") String id) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            System.out.println(id);
+            Candidato can = candidatoServicio.listarPorId(id);
+            if (can.isEstado()) {
+                can.setEstado(false);
+            } else {
+                can.setEstado(true);
+            }
+            candidatoServicio.editarCandidato(can);
+            response.put("clase", "success");
+            response.put("mensaje", "Éxito al cambiar estado");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("clase", "error");
+            response.put("mensaje", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/candidatos")
-    public ResponseEntity<InputStreamResource> descargarExcel(){
+    public ResponseEntity<InputStreamResource> descargarExcel() {
         List<Candidato> lista = candidatoServicio.listarCandidatos();
-        
+
         ByteArrayInputStream bis = excelServicio.exportCandidatosToExcel(lista);
-        
+
         HttpHeaders header = new HttpHeaders();
         header.add("Content-Disposition", "attachment; filename=candidatos.xlsx");
-         return ResponseEntity.ok()
+        return ResponseEntity.ok()
                 .headers(header)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new InputStreamResource(bis));
     }
-    
-    
-   
-    
+
     @GetMapping("/listaCandidatos/{nombre}/descargar-archivos")
     public ResponseEntity<Resource> descargarArchivosCandidatos(@PathVariable String nombre) throws IOException {
         // Retain the original name with spaces, just sanitize invalid characters
