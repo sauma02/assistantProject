@@ -40,87 +40,81 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/formularios")
 public class FormsController {
-
+    
     @Autowired
     private CandidatoServicio candidatoServicio;
     @Autowired
     private UsuarioServicio usuarioServicio;
     @Autowired
     private ArchivoServicio archivoServicio;
-
+    
     @Value("${valor.ruta}")
     private String ruta;
-
+    
     @GetMapping("/registrarCandidato")
     public String registrarCandidatoForm(Model model, Usuario usuario) {
         model.addAttribute("listaUsuario", usuarioServicio.listarUsuarios());
         model.addAttribute("candidato", new Candidato());
         return "formularios/registrarCandidato";  // no .html extension
     }
-
+    
     @PostMapping("/actualizarArchivos")
     public String actualizarArchivos(@Valid Candidato candidato, BindingResult result,
             RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files) {
         try {
-
-            if (files.length == 0 || files == null || files[0].isEmpty()) {
-                flash.addAttribute("clase", "danger");
-                flash.addAttribute("mensaje", "No se ha cargado ningun archivo JPG, PNG, JPEG o PDF");
+            if (files == null || files.length == 0 || files[0].isEmpty()) {
+                flash.addFlashAttribute("clase", "danger");
+                flash.addFlashAttribute("mensaje", "No se ha cargado ningún archivo JPG, PNG, JPEG o PDF");
                 return "redirect:/formularios/registrarCandidato";
             } else {
+                // Verificar si el candidato ya existe en la base de datos
                 Candidato candi = candidatoServicio.listarPorCedula(candidato.getDoc());
-
+                if (candi == null) {
+                    // Si no existe, guardarlo primero
+                    candi = candidatoServicio.registrarCandidato(candidato);
+                }
+                
                 List<Archivo> archivos = candi.getArchivos();
+                String rutaArchivo = this.ruta + "archivos/" + candi.getNombre() + "/";
+                
                 for (MultipartFile file : files) {
-                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + candidato.getNombre() + "/");
-
+                    String nombreArchivo = archivosUploads.guardarArchivo(file, rutaArchivo);
+                    
                     if ("no".equals(nombreArchivo)) {
-                        flash.addAttribute("clase", "danger");
-                        flash.addAttribute("mensaje", "El formato no es valido, porfavor solo suba archivos JPG, PNG, JPEG o PDF");
+                        flash.addFlashAttribute("clase", "danger");
+                        flash.addFlashAttribute("mensaje", "El formato no es válido, por favor solo suba archivos JPG, PNG, JPEG o PDF");
                         return "redirect:/formularios/registrarCandidato";
                     }
                     if (nombreArchivo != null) {
                         Archivo archivo = new Archivo();
                         archivo.setFileName(nombreArchivo);
                         archivo.setFileType(file.getContentType());
-                        archivo.setCandidato(candidato);
+                        archivo.setCandidato(candi); // Asignar el candidato persistido
                         archivo.setRuta(this.ruta);
                         archivoServicio.guardarArchivo(archivo);
                         archivos.add(archivo);
-
                     }
                 }
-                candidato.setArchivos(archivos);
-                candidatoServicio.actualizarArchivos(candidato); // Actualizar el candidato con los archivos
 
+                // Actualizar los archivos del candidato persistido
+                candi.setArchivos(archivos);
+                candidatoServicio.actualizarArchivos(candi);
+                
                 flash.addFlashAttribute("clase", "success");
-                flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos");
+                flash.addFlashAttribute("mensaje", "Éxito al actualizar los archivos");
                 return "redirect:/formularios/archivos_respuesta";
-                //            if (result.hasErrors()) {
-//                Map<String, String> errors = new HashMap<>();
-//                result.getFieldErrors().forEach(err -> {
-//                    errors.put(err.getField(),
-//                            "El campo".concat(err.getField()).concat("").concat(err.getDefaultMessage()));
-//                });
-//                model.addAttribute("errors", errors);
-//                model.addAttribute("candidato", candidato);
-//                return "formularios/registrarCandidato";
-//            }
-
             }
         } catch (Exception e) {
-            e.printStackTrace();
             flash.addFlashAttribute("clase", "danger");
-            flash.addFlashAttribute("mensaje", e.getMessage());
+            flash.addFlashAttribute("mensaje", "Error al actualizar los archivos. Por favor intente de nuevo.");
             return "redirect:/formularios/registrarCandidato";
-
         }
     }
-
+    
     @PostMapping("/registrarCandidato")
     public String registrarCandidatoPost(@Valid Candidato candidato, BindingResult result,
             @RequestParam("archivos[]") MultipartFile[] files, RedirectAttributes flash, Model model) {
-
+        
         try {
             // Validar si la cédula ya está registrada
             if (candidatoServicio.listarPorCedula(candidato.getDoc()) != null) {
@@ -139,7 +133,6 @@ public class FormsController {
 //                model.addAttribute("candidato", candidato);
 //                return "formularios/registrarCandidato";
 //            }
-
             // Validar archivos
             if (files == null || files.length == 0 || files[0].isEmpty()) {
                 flash.addFlashAttribute("clase", "danger");
@@ -184,11 +177,11 @@ public class FormsController {
             // Asignar archivos al candidato y actualizarlo
             candidato.setArchivos(archivos);
             candidatoServicio.editarCandidato(candidato);
-
+            
             flash.addFlashAttribute("clase", "success");
             flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos.");
             return "redirect:/formularios/archivos_respuesta";
-
+            
         } catch (Exception e) {
             e.printStackTrace();
             flash.addFlashAttribute("clase", "danger");
@@ -196,17 +189,17 @@ public class FormsController {
             return "redirect:/formularios/registrarCandidato";
         }
     }
-
+    
     @GetMapping("/archivos_respuesta")
     public String archivosRespuesta(Model model) {
         return "archivos_respuesta";
     }
-
+    
     @ModelAttribute
     public void equipo(Model model) {
         List<Usuario> listaEquipo = usuarioServicio.listarUsuarios();
-
+        
         model.addAttribute("listaEquipo", listaEquipo);
     }
-
+    
 }

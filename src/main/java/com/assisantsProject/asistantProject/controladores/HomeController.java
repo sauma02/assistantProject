@@ -6,6 +6,8 @@ package com.assisantsProject.asistantProject.controladores;
 
 import com.assisantsProject.asistantProject.entidades.Candidato;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
+import com.assisantsProject.asistantProject.servicios.ExcelServicio;
+import java.io.ByteArrayInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,22 +15,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.eclipse.angus.mail.iap.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import static org.springframework.integration.mail.dsl.Mail.headers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
+import static org.springframework.web.servlet.function.RequestPredicates.headers;
 
 /**
  *
@@ -42,11 +50,15 @@ public class HomeController {
 
     @Autowired
     private CandidatoServicio candidatoServicio;
+    
+    @Autowired
+    private ExcelServicio excelServicio;
 
     @GetMapping("/")
     public String home(Model model) {
         return "home";
     }
+     
 
     @GetMapping("/listaCandidatos")
     public String listaCandidatos(Model model) {
@@ -55,7 +67,23 @@ public class HomeController {
 
         return "listaCandidatos";
     }
-
+    @GetMapping("/candidatos")
+    public ResponseEntity<InputStreamResource> descargarExcel(){
+        List<Candidato> lista = candidatoServicio.listarCandidatos();
+        
+        ByteArrayInputStream bis = excelServicio.exportCandidatosToExcel(lista);
+        
+        HttpHeaders header = new HttpHeaders();
+        header.add("Content-Disposition", "attachment; filename=candidatos.xlsx");
+         return ResponseEntity.ok()
+                .headers(header)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(new InputStreamResource(bis));
+    }
+    
+    
+   
+    
     @GetMapping("/listaCandidatos/{nombre}/descargar-archivos")
     public ResponseEntity<Resource> descargarArchivosCandidatos(@PathVariable String nombre) throws IOException {
         // Retain the original name with spaces, just sanitize invalid characters

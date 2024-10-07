@@ -43,6 +43,7 @@ public class Candidato {
     @NotEmpty(message = "esta vacio")
     private String fechaExpedicion;
     private String wave;
+    private boolean estado;
     @NotEmpty(message = "esta vacio")
     private String fechaNacimiento;
    
@@ -55,7 +56,7 @@ public class Candidato {
     public Candidato() {
     }
 
-    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, String wave, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
+    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, String wave, boolean estado, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
@@ -64,15 +65,29 @@ public class Candidato {
         this.doc = doc;
         this.fechaExpedicion = fechaExpedicion;
         this.wave = wave;
+        this.estado = estado;
         this.fechaNacimiento = fechaNacimiento;
         this.archivos = archivos;
         this.equipo = equipo;
     }
+    
+    public boolean isActivo(boolean estado){
+        if(estado){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
 
     @Override
     public String toString() {
-        return "Candidato{" + "id=" + id + ", nombre=" + nombre + ", correo=" + correo + ", contacto=" + contacto + ", tipoDoc=" + tipoDoc + ", doc=" + doc + ", fechaExpedicion=" + fechaExpedicion + ", wave=" + wave + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
+        return "Candidato{" + "id=" + id + ", nombre=" + nombre + ", correo=" + correo + ", contacto=" + contacto + ", tipoDoc=" + tipoDoc + ", doc=" + doc + ", fechaExpedicion=" + fechaExpedicion + ", wave=" + wave + ", estado=" + estado + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
     }
+
+   
+
+    
 
     
 

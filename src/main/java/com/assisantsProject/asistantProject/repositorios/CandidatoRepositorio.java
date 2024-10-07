@@ -16,4 +16,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CandidatoRepositorio extends JpaRepository<Candidato, String>  {
     public Optional<Candidato> findByDoc(String cedula);
+    
 }

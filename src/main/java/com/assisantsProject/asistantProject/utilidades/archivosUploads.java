@@ -17,8 +17,8 @@ public class archivosUploads {
         if(archivosUploads.validarArchivo(file.getContentType()) == false){
           return "no";  
         }else{
-            long time = System.currentTimeMillis();
-            String nombre = time + archivosUploads.getExtension(file.getContentType());
+            
+            String nombre = file.getOriginalFilename() + archivosUploads.getExtension(file.getContentType());
             try {
                 File imageFile = new File(ruta+nombre);
                 

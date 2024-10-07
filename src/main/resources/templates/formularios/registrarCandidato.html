@@ -41,7 +41,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <div class="col-12">
                     <label for="inputName" class="form-label">Numero de cedula:</label>
                     <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
-                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('cedula')}" th:text="${errors.cedula}"></div>
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
                 </div>
                 <div class="col-12">
                     <label for="inputName" class="form-label">Fecha de Expedicion:</label>
@@ -87,7 +87,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <div class="col-12">
                     <label for="inputName" class="form-label">Ingresa tu numero de cedula:</label>
                     <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
-                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('cedula')}" th:text="${errors.cedula}"></div>
+                        <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
                 </div>
                  <div class="col-md-2">
                     <label for="inputZip" class="form-label">Archivos:</label>
