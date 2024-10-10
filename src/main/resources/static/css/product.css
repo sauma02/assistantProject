@@ -19,6 +19,16 @@
   color: #fff;
   text-decoration: none;
 }
+.border-success {
+    font-weight: bold;
+    color: green;
+}
+
+.border-danger {
+    font-weight: bold;
+    color: red;
+}
+
 #fancybox-loading {
 	position: fixed;
 	top: 50%;

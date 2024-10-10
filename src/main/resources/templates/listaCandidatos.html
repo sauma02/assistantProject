@@ -42,7 +42,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <td th:text="${lista.doc}"></td>
                         <td th:text="${lista.fechaExpedicion}"></td>
                         <td th:text="${lista.wave}"></td>
-                        <td th:text="${lista.estado == true || lista.estado == null ? 'Activo' : 'Inactivo'}"></td>
+                        <td th:text="${lista.estado == true || lista.estado == null ? 'Activo' : 'Inactivo'}"
+                            th:classappend="${lista.estado == true || lista.estado == null ? 'border-success' : 'border-danger'}"></td>
+
 
                         <td>
                             <span th:if="${lista.archivos == null}">No hay archivos seleccionados</span>
@@ -93,27 +95,28 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         function cambiarEstado(element) {
                                             var id = element.getAttribute("data-id");
 
-                                            // Aquí llamas a tu endpoint para cambiar el estado
-                                            // Puedes usar Fetch API o AJAX según tu necesidad
                                             fetch(`/cambiarEstado/${id}`)
                                                     .then(response => {
                                                         if (response.ok) {
-                                                            return response.json(); // Asegúrate de que tu backend devuelve un JSON
+                                                            return response.json();
                                                         } else {
                                                             throw new Error('Error al cambiar estado');
                                                         }
                                                     })
                                                     .then(data => {
-                                                        var estado = data.clase; // Suponiendo que el servidor devuelve el estado
-                                                        var mensaje = data.mensaje; // Mensaje del servidor
+                                                        var estado = data.clase;
+                                                        var mensaje = data.mensaje;
 
                                                         if (estado === 'success') {
                                                             Swal.fire({
                                                                 icon: "success",
                                                                 title: "Éxito",
                                                                 text: mensaje
+                                                            }).then(() => {
+                                                                setTimeout(() => {
+                                                                    location.reload();
+                                                                }, 0); // Espera 1 segundo antes de recargar
                                                             });
-                                                            location.reload();
                                                         } else {
                                                             Swal.fire({
                                                                 icon: "error",
@@ -126,30 +129,32 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                         console.error('Error:', error);
                                                     });
                                         }
+
                                         function eliminar(element) {
                                             var id = element.getAttribute("data-id");
 
-                                            // Aquí llamas a tu endpoint para cambiar el estado
-                                            // Puedes usar Fetch API o AJAX según tu necesidad
                                             fetch(`/eliminarCandidato/${id}`)
                                                     .then(response => {
                                                         if (response.ok) {
-                                                            return response.json(); // Asegúrate de que tu backend devuelve un JSON
+                                                            return response.json();
                                                         } else {
                                                             throw new Error('Error al eliminar');
                                                         }
                                                     })
                                                     .then(data => {
-                                                        var estado = data.clase; // Suponiendo que el servidor devuelve el estado
-                                                        var mensaje = data.mensaje; // Mensaje del servidor
+                                                        var estado = data.clase;
+                                                        var mensaje = data.mensaje;
 
                                                         if (estado === 'success') {
                                                             Swal.fire({
                                                                 icon: "success",
                                                                 title: "Éxito",
                                                                 text: mensaje
+                                                            }).then(() => {
+                                                                setTimeout(() => {
+                                                                    location.reload();
+                                                                }, 0); // Espera 1 segundo antes de recargar
                                                             });
-                                                            location.reload();
                                                         } else {
                                                             Swal.fire({
                                                                 icon: "error",
@@ -162,6 +167,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                         console.error('Error:', error);
                                                     });
                                         }
+
 
 
                                         $(document).ready(function () {
