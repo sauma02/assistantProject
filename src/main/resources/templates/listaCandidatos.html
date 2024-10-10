@@ -10,7 +10,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <header th:replace="layout/frontEnd :: header"></header>
         <main class="container-fluid">
 
-            <div class="container mt-5">
+            
             <table id="candidatos" class="table table-striped mt-3" >
                 <thead>
                     <a class="btn btn-outline-primary" th:href="@{/candidatos}">Descargar base</a>
@@ -66,15 +66,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 <a th:href="@{/listaCandidatos/{nombreCandidato}/descargar-archivos(nombreCandidato=${lista.nombre})}" class="btn btn-primary">Descargar Archivos</a>
                                 <a href="#" class="btn btn-danger" th:data-id="${lista.id}" onclick="eliminar(this)" >Eliminar candidato</a>
                                 <a href="#" class="btn btn-warning" th:data-id="${lista.id}" onclick="cambiarEstado(this)">Cambiar estado</a>
-
-                                <button class="btn btn-success">Editar candidato</button>
+                                <a th:href="@{/formularios/editarCandidato/{id}(id=${lista.id})}" class="btn btn-success">Editar candidato</a>
+                                
 
                                 <hr>
                                     </td>
                                     </tr>
                                     </tbody>
                                     </table>
-                </div>
+            
 
 
                                     </main>
