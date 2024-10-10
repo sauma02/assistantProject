@@ -8,7 +8,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <head th:replace ="layout/frontEnd :: head(~{title}, ~{links})"></head>
     <body>
         <header th:replace="layout/frontEnd :: header"></header>
-        <div>Bienvenido al administrador de archivos</div>
+        <main class="container-fluid">
+            <div>Bienvenido al administrador de archivos</div>
+        </main>
+        
         <footer th:replace="layout/frontEnd :: footer"></footer>
         <div th:replace="layout/frontEnd :: scripts"></div>
     </body>

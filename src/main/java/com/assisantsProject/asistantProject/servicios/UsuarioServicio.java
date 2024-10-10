@@ -7,6 +7,7 @@ package com.assisantsProject.asistantProject.servicios;
 import com.assisantsProject.asistantProject.entidades.Usuario;
 import com.assisantsProject.asistantProject.repositorios.UsuarioRepositorio;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,15 @@ public class UsuarioServicio {
 private UsuarioRepositorio usuarioRepositorio;
     public List<Usuario> listarUsuarios() {
        return usuarioRepositorio.findAll();
+    }
+    public Usuario listarPorId(String id){
+        Optional<Usuario> res = usuarioRepositorio.findById(id);
+        if(res.isPresent()){
+            Usuario us = res.get();
+            return us;
+        }else{
+            return null;
+        }
     }
     
 }

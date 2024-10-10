@@ -8,48 +8,53 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})"></head>
     <body>
         <header th:replace="layout/frontEnd :: header"></header>
-        <main>
+        <main class="container-fluid">
             <div id="registrar">
-                <form th:action="@{/formularios/editarCandidato}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data" >
+                <form th:action="@{/formularios/editarCandidato}" class="row g-3" method="POST" enctype="multipart/form-data" >
+                    <div class="col-md-6" >
+                        <label for="id" class="form-label">Id:</label>
+                        <input type="text" name="id" th:value="${candidato.id}"  class="form-control" id="inputName" readonly="true">
+
+                    </div>
                     <div class="col-md-6">
                         <label for="inputName" class="form-label">Nombre:</label>
-                        <input type="text" th:field="*{nombre}" th:text="${candidato.nombre}" class="form-control" id="inputName">
+                        <input type="text" th:value="${candidato.nombre}" name="nombre" class="form-control" id="inputName">
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('nombre')}" th:text="${errors.nombre}"></div>
                     </div>
                     <div class="col-md-6">
                         <label for="inputEmail4" class="form-label">Email:</label>
-                        <input type="email" th:field="*{correo}" th:text="${candidato.correo}"  class="form-control" id="inputEmail4">
+                        <input type="email" th:value="${candidato.correo}" name="correo"  class="form-control" id="inputEmail4">
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('correo')}" th:text="${errors.correo}"></div>
                     </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Contacto:</label>
-                        <input type="text" th:field="*{contacto}" th:text="${candidato.contacto}"  class="form-control" id="inputName" >
+                        <input type="text" th:value="${candidato.contacto}" name="contacto"  class="form-control" id="inputName" >
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('contacto')}" th:text="${errors.contacto}"></div>
                     </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Tipo de documento:</label>
-                        <input type="text" th:field="*{tipoDoc}"  th:text="${candidato.tipoDoc}"  class="form-control" id="inputName" >
+                        <input type="text" th:value="${candidato.tipoDoc}" name="tipoDoc"  class="form-control" id="inputName" >
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
                     </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Numero de cedula:</label>
-                        <input type="text" th:field="*{doc}"  th:text="${candidato.doc}"  class="form-control" id="inputName" >
+                        <input type="text" th:value="${candidato.doc}"  name="doc"  class="form-control" id="inputName" >
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
                     </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Fecha de Expedicion:</label>
-                        <input type="text" th:field="*{fechaExpedicion}" th:text="${candidato.fechaExpedicion}"  class="form-control" id="inputName" >
+                        <input type="text" th:value="${candidato.fechaExpedicion}" name="fechaExpedicion"   class="form-control" id="inputName" >
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaExpedicion')}" th:text="${errors.fechaExpedicion}"></div>
                     </div>
                     <div class="col-12">
                         <label for="inputName" class="form-label">Wave(Ingresa la wave que te indicaron): </label>
-                        <input type="text" th:field="*{wave}" th:text="${candidato.wave}" class="form-control" id="inputName" >
+                        <input type="text" th:value="${candidato.wave}" name="wave"  class="form-control" id="inputName" >
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('wave')}" th:text="${errors.wave}"></div>
                     </div>
 
                     <div class="col-md-2">
                         <label for="inputName" class="form-label">Fecha de nacimiento(dd/mm/yyyy):</label>
-                        <input type="text" th:field="*{fechaNacimiento}" th:text="${candidato.fechaNacimiento}"  class="form-control" id="inputName">
+                        <input type="text" th:value="${candidato.fechaNacimiento}" name="fechaNacimiento"  class="form-control" id="inputName">
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
                     </div>
                     <div class="col-md-2">
@@ -59,14 +64,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </div>
                     <div class="form-group">
                         <label>Encargado del proceso:</label>
-                        <select th:field="*{equipo}" id="equipo" class="form-control">
-                            <option type="text" th:each="lista : ${listaEquipo}" th:value="${lista.id}" th:text="${lista.usuario}"></option>
+                        <select name="equipo" id="equipo" class="form-control">
+                            <option value="" disabled selected>Selecciona un encargado</option>
+                            <option th:each="lista : ${listaEquipo}" th:value="${lista.id}" th:text="${lista.usuario}"></option>
                         </select>
                     </div>
 
                     <div class="col-12">
                         <button type="submit" onclick="" class="btn btn-primary">Editar</button>
-                        <a  th:href="@{/listaCandidato}" class="btn btn-danger">Regresar</a>
+                        <a  th:href="@{/listaCandidatos}" class="btn btn-danger">Regresar</a>
                     </div>
                     <div th:if="${mensaje != null}" 
                          th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
@@ -100,15 +106,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         Swal.fire({
                             icon: "success",
                             title: "Exito",
-                            text: "Exito al editar"
-                            
+                            text: mensaje
+
                         });
-                    }else{
+                    } else if (clase == "error") {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
-                            text: "Error"
-                            
+                            text: mensaje
+
                         });
                     }
                 });

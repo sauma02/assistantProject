@@ -56,25 +56,43 @@ public class FormsController {
     public String editarCandidato(@PathVariable("id") String id, Model model) {
         Candidato can = candidatoServicio.listarPorId(id);
         model.addAttribute("candidato", can);
+       
         return "formularios/editarCandidato";
     }
 
     @PostMapping("/editarCandidato")
-    public String editarCandidatoForm(@Valid Candidato can, BindingResult result,
+    public String editarCandidatoForm(@RequestParam("id") String id, @RequestParam("nombre") String nombre,@RequestParam("correo") String correo,@RequestParam("contacto") String contacto, 
+            @RequestParam("tipoDoc") String tipoDoc, @RequestParam("doc") String doc, @RequestParam("fechaExpedicion") String fechaExpedicion,
+            @RequestParam("wave") String wave, @RequestParam("fechaNacimiento") String fechaNacimiento, @RequestParam("equipo") String equipoId,
             RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files) {
         try {
-            if (files == null || files.length == 0 || files[0].isEmpty()) {
-                Path ruta1 = Paths.get(ruta + "archivos/" + can.getNombre().trim() + "/");
-                List<Archivo> archivos = new ArrayList<>();
+            Candidato can = candidatoServicio.listarPorId(id);
+            Usuario u = usuarioServicio.listarPorId(equipoId);
+            can.setNombre(nombre);
+            can.setCorreo(correo);
+            can.setContacto(contacto);
+            can.setTipoDoc(tipoDoc);
+            can.setDoc(doc);
+            can.setFechaExpedicion(fechaExpedicion);
+            can.setWave(wave);
+            can.setEquipo(u);
+            can.setFechaNacimiento(fechaNacimiento);
+           
+            // Check if there are files to upload
+            if (files != null && files.length > 0 && !files[0].isEmpty()) {
+                List<Archivo> archivos = can.getArchivos() != null ? can.getArchivos() : new ArrayList<>();
+
+                // Loop through each file and process it
                 for (MultipartFile file : files) {
-                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + can.getNombre() + "/");
+                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + can.getNombre().trim() + "/");
+
                     if ("no".equals(nombreArchivo)) {
                         flash.addFlashAttribute("clase", "danger");
                         flash.addFlashAttribute("mensaje", "El formato no es válido. Por favor, suba solo archivos JPG, PNG, JPEG o PDF.");
-                        return "redirect:/formularios/editarCandidato";
+                        return "redirect:/formularios/editarCandidato/" + can.getId();
                     }
 
-                    // Crear objeto Archivo y asociarlo al candidato
+                    // If file saved successfully, create an Archivo object and associate it with the candidate
                     if (nombreArchivo != null) {
                         Archivo archivo = new Archivo();
                         archivo.setFileName(nombreArchivo);
@@ -82,57 +100,27 @@ public class FormsController {
                         archivo.setCandidato(can);
                         archivo.setRuta(this.ruta);
 
-                        // Guardar el archivo en la base de datos
                         archivoServicio.guardarArchivo(archivo);
                         archivos.add(archivo);
                     }
                 }
 
-                // Asignar archivos al candidato y actualizarlo
+                // Set the candidate's files and update the candidate
                 can.setArchivos(archivos);
-                candidatoServicio.editarCandidato(can);
-
-                flash.addFlashAttribute("clase", "success");
-                flash.addFlashAttribute("mensaje", "Éxito editar candidato");
-                return "redirect:/formularios/editarCandidato";
-            } else {
-                Path ruta1 = Paths.get(ruta + "archivos/" + can.getNombre().trim() + "/");
-                List<Archivo> archivos = can.getArchivos();
-                for (MultipartFile file : files) {
-                    String nombreArchivo = archivosUploads.guardarArchivo(file, this.ruta + "archivos/" + can.getNombre() + "/");
-                    if ("no".equals(nombreArchivo)) {
-                        flash.addFlashAttribute("clase", "danger");
-                        flash.addFlashAttribute("mensaje", "El formato no es válido. Por favor, suba solo archivos JPG, PNG, JPEG o PDF.");
-                        return "redirect:/formularios/editarCandidato";
-                    }
-
-                    // Crear objeto Archivo y asociarlo al candidato
-                    if (nombreArchivo != null) {
-                        Archivo archivo = new Archivo();
-                        archivo.setFileName(nombreArchivo);
-                        archivo.setFileType(file.getContentType());
-                        archivo.setCandidato(can);
-                        archivo.setRuta(this.ruta);
-
-                        // Guardar el archivo en la base de datos
-                        archivoServicio.guardarArchivo(archivo);
-                        archivos.add(archivo);
-                    }
-                }
-
-                // Asignar archivos al candidato y actualizarlo
-                can.setArchivos(archivos);
-                candidatoServicio.editarCandidato(can);
-
-                flash.addFlashAttribute("clase", "success");
-                flash.addFlashAttribute("mensaje", "Éxito editar candidato");
-                return "redirect:/formularios/editarCandidato";
             }
 
+            // Update the candidate regardless of file upload
+            candidatoServicio.editarCandidato(can);
+
+            flash.addFlashAttribute("clase", "success");
+            flash.addFlashAttribute("mensaje", "Candidato editado con éxito");
+            return "redirect:/formularios/editarCandidato/" + can.getId();
+
         } catch (Exception e) {
+            Candidato can = candidatoServicio.listarPorId(id);
             flash.addFlashAttribute("clase", "danger");
             flash.addFlashAttribute("mensaje", "Error al editar candidato. Por favor intente de nuevo.");
-            return "redirect:/formularios/editarCandidato";
+            return "redirect:/formularios/editarCandidato/" + can.getId();
         }
     }
 
