@@ -47,6 +47,10 @@ private UsuarioRepositorio usuarioRepositorio;
         usuarioRepositorio.save(usuario);
         return usuario;
     }
+    public Usuario listarUsuarioPorUsername(String username){
+        return usuarioRepositorio.findByUsuario(username);
+        
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

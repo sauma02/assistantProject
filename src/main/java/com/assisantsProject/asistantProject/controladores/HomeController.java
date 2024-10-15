@@ -4,10 +4,12 @@
  */
 package com.assisantsProject.asistantProject.controladores;
 
+import com.assisantsProject.asistantProject.config.CustomSuccessHandler;
 import com.assisantsProject.asistantProject.entidades.Candidato;
 import com.assisantsProject.asistantProject.entidades.Usuario;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
 import com.assisantsProject.asistantProject.servicios.ExcelServicio;
+import com.assisantsProject.asistantProject.servicios.UsuarioServicio;
 import com.assisantsProject.asistantProject.servicios.WaveServicio;
 import java.io.ByteArrayInputStream;
 
@@ -32,8 +34,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import static org.springframework.integration.mail.dsl.Mail.headers;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,11 +72,53 @@ public class HomeController {
 
     @Autowired
     private WaveServicio waveServicio;
+    @Autowired
+    private UsuarioServicio usuarioServicio;
+    
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private CustomSuccessHandler authenticationSuccessHandler;
 
     @GetMapping("/")
     public String home(Model model) {
         return "home";
     }
+    @GetMapping("/login")
+    public String loginForm(){
+        return "login";
+    }
+    @PostMapping("/login")
+    public String loginSubmit(@RequestParam("username") String username, @RequestParam("password") String password, ModelMap map){
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+    try {
+        Usuario user = usuarioServicio.listarUsuarioPorUsername(username);
+        if(user.getPassword().equals(password)){
+            // Authenticate the user
+        Authentication authentication = authenticationManager.authenticate(token);
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        // Determine the redirect URL using the authentication success handler
+        String redirectUrl = authenticationSuccessHandler.determineTargetUrlForAuthentication(authentication);
+    
+        // Redirect the user to the determined URL
+        return "redirect:" + redirectUrl;
+        }else{
+           
+        return "redirect:/login";
+        }
+        
+    } catch (AuthenticationException e) {
+        e.printStackTrace();
+        if(e.getCause() != null){
+            System.err.println("Error: "+e.getCause().toString());
+        }
+        return "error.html";
+    }
+    
+}
 
     @GetMapping("/listaCandidatos")
     public String listaCandidatos(Model model) {
@@ -189,7 +241,14 @@ public class HomeController {
         }
         return ResponseEntity.ok(response);
     }
-
+    
+    @ModelAttribute
+    public void usuario(@AuthenticationPrincipal UserDetails userDetails, Model model){
+        String username = userDetails.getUsername();
+        
+        model.addAttribute("usuario", username);
+    }
+    
     @ModelAttribute
     public void listaWave(Model model) {
         model.addAttribute("listaWave", waveServicio.listarWaves());
