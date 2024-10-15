@@ -9,6 +9,9 @@ import com.assisantsProject.asistantProject.repositorios.UsuarioRepositorio;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,7 +19,7 @@ import org.springframework.stereotype.Service;
  * @author Admin
  */
 @Service
-public class UsuarioServicio {
+public class UsuarioServicio implements UserDetailsService{
 @Autowired
 private UsuarioRepositorio usuarioRepositorio;
     public List<Usuario> listarUsuarios() {
@@ -30,6 +33,31 @@ private UsuarioRepositorio usuarioRepositorio;
         }else{
             return null;
         }
+    }
+    public Usuario listarPorCorreo(String correo){
+        Optional<Usuario> res = usuarioRepositorio.findByCorreo(correo);
+        if(res.isPresent()){
+            Usuario us = res.get();
+            return us;
+        }else{
+            return null;
+        }
+    }
+    public Usuario registrarUsuario(Usuario usuario){
+        usuarioRepositorio.save(usuario);
+        return usuario;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Usuario us = usuarioRepositorio.findByUsuario(username);
+        if(us != null){
+            return us;
+        }else{
+            throw new UsernameNotFoundException("El usuario no existe");
+        }
+            
+            
     }
     
 }

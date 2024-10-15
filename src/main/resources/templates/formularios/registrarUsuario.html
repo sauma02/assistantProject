@@ -5,12 +5,61 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
+
     </head>
-    <body>
-        <div>TODO write content</div>
+    <body class="container">
+        <main class="container-fluid">
+            <div id="registrar" style="display: none;">
+                <form th:action="@{/formularios/registrarUsuario}" th:object="${usuario}" class="row g-3" method="POST" enctype="multipart/form-data" >
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Nombre:</label>
+                        <input type="text" th:field="*{usuario}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('usuario')}" th:text="${errors.nombre}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Email:</label>
+                        <input type="email" th:field="*{password}" class="form-control" id="inputEmail4">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('password')}" th:text="${errors.correo}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Contacto:</label>
+                        <input type="text" th:field="*{correo}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('correo')}" th:text="${errors.contacto}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Encargado del proceso:</label>
+                        <select th:field="*{rol}" id="equipo" class="form-control">
+                            <option type="text" th:each="rol : ${rol}" th:value="${rol.id}" th:text="${rol.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                    <div th:if="${mensaje != null}" 
+                         th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
+                        <span th:text="${mensaje}"></span> 
+                        <button th:if="${mensaje != null}" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </main>
     </body>
+    <div th:replace="layout/frontEnd :: scripts"></div>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            $('#mostrarRegistro').on('click', function () {
+                $('#registrar').show();
+                $('#actualizar').hide();
+            });
+            $('#mostrarActualizar').on('click', function () {
+                $('#registrar').hide();
+                $('#actualizar').show();
+            });
+        });
+
+    </script>
 </html>

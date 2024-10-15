@@ -41,7 +41,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <td th:text="${lista.tipoDoc}"></td>
                         <td th:text="${lista.doc}"></td>
                         <td th:text="${lista.fechaExpedicion}"></td>
-                        <td th:text="${lista.wave}"></td>
+                        <td>
+                            <select name="wave" id="wave" class="form-control">
+                                <option value="" disabled selected>Selecciona un encargado</option>
+                                <option th:each="wave : ${listaWave}" th:value="${wave.id}" th:text="${wave.nombre}"></option>
+                            </select>
+                             <a href="#" class="btn btn-danger flex-fill mx-2" th:data-id="${lista.id}" onclick="asignarWave(this)">Asignar Wave</a>
+                        </td>
                         <td th:text="${lista.estado == true || lista.estado == null ? 'Activo' : 'Inactivo'}"
                             th:classappend="${lista.estado == true || lista.estado == null ? 'border-success' : 'border-danger'}"></td>
 
@@ -139,6 +145,43 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                             return response.json();
                                                         } else {
                                                             throw new Error('Error al eliminar');
+                                                        }
+                                                    })
+                                                    .then(data => {
+                                                        var estado = data.clase;
+                                                        var mensaje = data.mensaje;
+
+                                                        if (estado === 'success') {
+                                                            Swal.fire({
+                                                                icon: "success",
+                                                                title: "Éxito",
+                                                                text: mensaje
+                                                            }).then(() => {
+                                                                setTimeout(() => {
+                                                                    location.reload();
+                                                                }, 0); // Espera 1 segundo antes de recargar
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: "error",
+                                                                title: "Error",
+                                                                text: mensaje
+                                                            });
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error('Error:', error);
+                                                    });
+                                        }
+                                        function asignarWave(element) {
+                                            var id = element.getAttribute("data-id");
+
+                                            fetch(`/asignarWave/${id}`)
+                                                    .then(response => {
+                                                        if (response.ok) {
+                                                            return response.json();
+                                                        } else {
+                                                            throw new Error('Error al cambiar');
                                                         }
                                                     })
                                                     .then(data => {

@@ -8,15 +8,19 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -27,24 +31,26 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 @Setter
 public class Usuario implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
-    @NotEmpty(message="esta vacio")
+    @NotEmpty(message = "esta vacio")
     private String usuario;
-     @NotEmpty(message="esta vacio")
+    @NotEmpty(message = "esta vacio")
     private String password;
-    @NotEmpty(message="esta vacio")
+    @NotEmpty(message = "esta vacio")
     private String correo;
-    @ManyToMany
-    private List<Rol> rol;
+    @OneToOne
+    @JoinColumn(name = "rol")
+    private Rol rol;
     @OneToMany
     private List<Candidato> candidatos;
 
     public Usuario() {
     }
 
-    public Usuario(String id, String usuario, String password, String correo, List<Rol> rol, List<Candidato> candidatos) {
+    public Usuario(String id, String usuario, String password, String correo, Rol rol, List<Candidato> candidatos) {
         this.id = id;
         this.usuario = usuario;
         this.password = password;
@@ -60,35 +66,50 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        try {
+            List<GrantedAuthority> authorityList = new ArrayList();
+            List<Rol> role = new ArrayList();
+            role.add(rol);
+            for (Rol rol : role) {
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(rol.getNombre());
+                authorityList.add(authority);
 
-    @Override
-    public String getUsername() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+            return authorityList;
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            if (e.getCause() != null) {
+                System.err.println("Cause: " + e.getCause().getMessage());
+            }
+            return null;
+        }
+
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return true;
     }
-    
-    
-    
-    
+
+    @Override
+    public String getUsername() {
+        return this.usuario;
+    }
+
 }

@@ -5,6 +5,7 @@
 package com.assisantsProject.asistantProject.repositorios;
 
 import com.assisantsProject.asistantProject.entidades.Usuario;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UsuarioRepositorio extends JpaRepository<Usuario, String>{
-    
+    public Optional<Usuario> findByCorreo(String correo);
+    public Usuario findByUsuario(String usuario);
 }

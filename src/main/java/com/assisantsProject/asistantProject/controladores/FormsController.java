@@ -6,10 +6,12 @@ package com.assisantsProject.asistantProject.controladores;
 
 import com.assisantsProject.asistantProject.entidades.Archivo;
 import com.assisantsProject.asistantProject.entidades.Candidato;
+import com.assisantsProject.asistantProject.entidades.Rol;
 import com.assisantsProject.asistantProject.entidades.Usuario;
 import com.assisantsProject.asistantProject.repositorios.ArchivoRepositorio;
 import com.assisantsProject.asistantProject.servicios.ArchivoServicio;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
+import com.assisantsProject.asistantProject.servicios.RolServicio;
 import com.assisantsProject.asistantProject.servicios.UsuarioServicio;
 import com.assisantsProject.asistantProject.utilidades.archivosUploads;
 import jakarta.validation.Valid;
@@ -48,6 +50,8 @@ public class FormsController {
     private UsuarioServicio usuarioServicio;
     @Autowired
     private ArchivoServicio archivoServicio;
+    @Autowired
+    private RolServicio rolServicio;
 
     @Value("${valor.ruta}")
     private String ruta;
@@ -56,12 +60,42 @@ public class FormsController {
     public String editarCandidato(@PathVariable("id") String id, Model model) {
         Candidato can = candidatoServicio.listarPorId(id);
         model.addAttribute("candidato", can);
-       
+
         return "formularios/editarCandidato";
     }
 
+    @GetMapping("/registrarUsuario")
+    public String registrarCandidato(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        model.addAttribute("rol", rolServicio.listaRoles());
+        return "registrarUsuario";
+
+    }
+
+    @PostMapping("/registrarUsuario")
+    public String registrarUsuarioForm(@Valid Usuario usuario, BindingResult result, RedirectAttributes flash, Model model) {
+        try {
+
+            if (usuarioServicio.listarPorCorreo(usuario.getCorreo()) != null) {
+                flash.addFlashAttribute("clase", "danger");
+                flash.addFlashAttribute("mensaje", "Este correo ya se encuentra registrado");
+                return "redirect:/formularios/registrarUsuario";
+            }
+            usuarioServicio.registrarUsuario(usuario);
+            flash.addFlashAttribute("clase", "success");
+            flash.addFlashAttribute("mensaje", "Exito al registrar");
+            return "redirect:/formularios/registrarUsuario";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            flash.addFlashAttribute("clase", "danger");
+            flash.addFlashAttribute("mensaje", e.getCause());
+            return "redirect:/formularios/registrarUsuario";
+        }
+    }
+
     @PostMapping("/editarCandidato")
-    public String editarCandidatoForm(@RequestParam("id") String id, @RequestParam("nombre") String nombre,@RequestParam("correo") String correo,@RequestParam("contacto") String contacto, 
+    public String editarCandidatoForm(@RequestParam("id") String id, @RequestParam("nombre") String nombre, @RequestParam("correo") String correo, @RequestParam("contacto") String contacto,
             @RequestParam("tipoDoc") String tipoDoc, @RequestParam("doc") String doc, @RequestParam("fechaExpedicion") String fechaExpedicion,
             @RequestParam("wave") String wave, @RequestParam("fechaNacimiento") String fechaNacimiento, @RequestParam("equipo") String equipoId,
             RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files) {
@@ -77,7 +111,7 @@ public class FormsController {
             can.setWave(wave);
             can.setEquipo(u);
             can.setFechaNacimiento(fechaNacimiento);
-           
+
             // Check if there are files to upload
             if (files != null && files.length > 0 && !files[0].isEmpty()) {
                 List<Archivo> archivos = can.getArchivos() != null ? can.getArchivos() : new ArrayList<>();
@@ -273,6 +307,12 @@ public class FormsController {
         List<Usuario> listaEquipo = usuarioServicio.listarUsuarios();
 
         model.addAttribute("listaEquipo", listaEquipo);
+    }
+    @ModelAttribute
+    public void rol(Model model){
+        List<Rol> listarRoles = rolServicio.listaRoles();
+        
+        model.addAttribute("listaRol", listarRoles);
     }
 
 }

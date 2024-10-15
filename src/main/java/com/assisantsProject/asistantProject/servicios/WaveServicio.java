@@ -4,22 +4,26 @@
  */
 package com.assisantsProject.asistantProject.servicios;
 
-import com.assisantsProject.asistantProject.entidades.Rol;
-import com.assisantsProject.asistantProject.repositorios.RolRepositorio;
+import com.assisantsProject.asistantProject.entidades.Wave;
+import com.assisantsProject.asistantProject.repositorios.WaveRepositorio;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
- * @author Admin
+ * @author USUARIO
  */
 @Service
-public class RolServicio {
+public class WaveServicio {
     @Autowired
-    private RolRepositorio rolRepositorio;
+    private WaveRepositorio waveRepositorio;
     
-    public List<Rol> listaRoles(){
-        return rolRepositorio.findAll();
+    public Wave registrarWave(Wave wave){
+        waveRepositorio.save(wave);
+        return wave;
+    }
+    public List<Wave> listarWaves(){
+        return waveRepositorio.findAll();
     }
 }

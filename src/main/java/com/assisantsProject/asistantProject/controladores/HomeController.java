@@ -5,8 +5,10 @@
 package com.assisantsProject.asistantProject.controladores;
 
 import com.assisantsProject.asistantProject.entidades.Candidato;
+import com.assisantsProject.asistantProject.entidades.Usuario;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
 import com.assisantsProject.asistantProject.servicios.ExcelServicio;
+import com.assisantsProject.asistantProject.servicios.WaveServicio;
 import java.io.ByteArrayInputStream;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ import static org.springframework.integration.mail.dsl.Mail.headers;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,6 +60,9 @@ public class HomeController {
     @Autowired
     private ExcelServicio excelServicio;
 
+    @Autowired
+    private WaveServicio waveServicio;
+
     @GetMapping("/")
     public String home(Model model) {
         return "home";
@@ -69,9 +75,9 @@ public class HomeController {
 
         return "listaCandidatos";
     }
-    
+
     @GetMapping("/eliminarCandidato/{id}")
-    public ResponseEntity<Map<String, String>> eliminarCandidato(@PathVariable("id") String id){
+    public ResponseEntity<Map<String, String>> eliminarCandidato(@PathVariable("id") String id) {
         Map<String, String> response = new HashMap<>();
         try {
             Candidato can = candidatoServicio.listarPorId(id);
@@ -164,4 +170,29 @@ public class HomeController {
                 .body(recurso);
     }
 
+    @GetMapping("/asignarWave/{id}")
+    public ResponseEntity<Map<String, String>> asignarWave(@PathVariable("id") String id, @RequestParam("wave") String wave) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            System.out.println(id);
+            Candidato can = candidatoServicio.listarPorId(id);
+            can.setWave(wave);
+            candidatoServicio.editarCandidato(can);
+            response.put("clase", "success");
+            response.put("mensaje", "Éxito al cambiar wave");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("clase", "error");
+            response.put("mensaje", e.getMessage());
+
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @ModelAttribute
+    public void listaWave(Model model) {
+        model.addAttribute("listaWave", waveServicio.listarWaves());
+
+    }
 }
