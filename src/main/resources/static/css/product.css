@@ -22,11 +22,13 @@
 .border-success {
     font-weight: bold;
     color: green;
+    background: green;
 }
 
 .border-danger {
     font-weight: bold;
     color: red;
+    background: red;
 }
 
 #fancybox-loading {

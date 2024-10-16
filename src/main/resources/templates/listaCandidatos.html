@@ -13,7 +13,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             <table id="candidatos" class="table table-striped mt-3" >
                 <thead>
-                    <a class="btn btn-outline-primary" th:href="@{/candidatos}">Descargar base</a>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex mb-2">
+                            <a class="btn btn-outline-primary" th:href="@{/candidatos}">Descargar base</a>
+                            <a class="btn btn-outline-secondary" 
+                               data-bs-toggle="modal" 
+                               data-bs-target="#modalRegistrarWave">
+                                Añadir wave
+                            </a>
+                        </div>
+                    </div>
+
                     <tr>
                         <th>Id: </th>
                         <th>Nombre: </th>
@@ -42,12 +52,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <td th:text="${lista.doc}"></td>
                         <td th:text="${lista.fechaExpedicion}"></td>
                         <td>
-                            <select name="wave" id="wave" class="form-control">
-                                <option value="" disabled selected>Selecciona un encargado</option>
+                            <select name="wave" id="waveSelect_${lista.id}" class="form-control">
+                                <option th:text="${lista.wave == null ? 'Seleccionar wave' : lista.wave.nombre}" disabled selected></option>
                                 <option th:each="wave : ${listaWave}" th:value="${wave.id}" th:text="${wave.nombre}"></option>
                             </select>
-                             <a href="#" class="btn btn-danger flex-fill mx-2" th:data-id="${lista.id}" onclick="asignarWave(this)">Asignar Wave</a>
+                            <a href="#" class="btn btn-danger flex-fill mx-2" th:data-id="${lista.id}" onclick="asignarWave(this, 'waveSelect_${lista.id}')">Asignar Wave</a>
+
                         </td>
+
+
                         <td th:text="${lista.estado == true || lista.estado == null ? 'Activo' : 'Inactivo'}"
                             th:classappend="${lista.estado == true || lista.estado == null ? 'border-success' : 'border-danger'}"></td>
 
@@ -91,7 +104,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     </main>
 
-
+                                    <div th:replace="~{'layout/frontEnd' :: modal}"></div>
                                     <footer th:replace="layout/frontEnd :: footer"></footer>
 
                                     <div th:replace="layout/frontEnd :: scripts">
@@ -173,10 +186,28 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                         console.error('Error:', error);
                                                     });
                                         }
-                                        function asignarWave(element) {
+                                        function asignarWave(element, waveSelectId) {
                                             var id = element.getAttribute("data-id");
+                                            var waveSelect = document.getElementById(waveSelectId);
 
-                                            fetch(`/asignarWave/${id}`)
+                                            if (waveSelect === null) {
+                                                console.error('El select de wave no fue encontrado para el ID:', waveSelectId);
+                                                return;
+                                            }
+
+                                            var selectedWave = waveSelect.value;
+
+                                            if (!selectedWave || selectedWave === "") {
+                                                alert("Por favor, selecciona una wave antes de asignar.");
+                                                return;
+                                            }
+
+                                            fetch(`/asignarWave/${id}?wave=${selectedWave}`, {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json'
+                                                }
+                                            })
                                                     .then(response => {
                                                         if (response.ok) {
                                                             return response.json();
@@ -194,9 +225,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                                 title: "Éxito",
                                                                 text: mensaje
                                                             }).then(() => {
-                                                                setTimeout(() => {
-                                                                    location.reload();
-                                                                }, 0); // Espera 1 segundo antes de recargar
+                                                                location.reload();
                                                             });
                                                         } else {
                                                             Swal.fire({
@@ -213,9 +242,73 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
 
+
+
+                                        const form = document.getElementById('registrarWaveForm');
+                                        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                                        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+                                        if (form) {
+                                            form.addEventListener('submit', function (event) {
+                                                event.preventDefault(); // Prevent the default form submission behavior
+
+                                                const formData = new FormData(form);
+
+                                                // Send the form data to the backend with CSRF token
+                                                fetch('/registrarWave', {
+                                                    method: 'POST',
+                                                    body: formData,
+                                                    headers: {
+                                                        'X-Requested-With': 'XMLHttpRequest',
+                                                        [csrfHeader]: csrfToken // Include the CSRF token in the request header
+                                                    }
+                                                })
+                                                        .then(response => {
+                                                            if (response.ok) {
+                                                                return response.json(); // Parse the response as JSON
+                                                            } else {
+                                                                throw new Error('Error processing request');
+                                                            }
+                                                        })
+                                                        .then(data => {
+                                                            const mensajeWave = document.getElementById('mensajeWave');
+                                                            const mensajeText = document.getElementById('mensajeText');
+
+                                                            if (data.clase === 'success') {
+                                                                mensajeWave.classList.remove('d-none', 'alert-danger');
+                                                                mensajeWave.classList.add('alert-success');
+                                                                mensajeText.textContent = data.mensaje;
+
+                                                                setTimeout(() => {
+                                                                    var modal = bootstrap.Modal.getInstance(document.getElementById('modalRegistrarWave'));
+                                                                    modal.hide();
+                                                                    location.reload();  // Reload the page
+                                                                }, 2000);
+                                                            } else {
+                                                                mensajeWave.classList.remove('d-none', 'alert-success');
+                                                                mensajeWave.classList.add('alert-danger');
+                                                                mensajeText.textContent = data.mensaje;
+                                                            }
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('Error:', error);
+                                                            const mensajeWave = document.getElementById('mensajeWave');
+                                                            const mensajeText = document.getElementById('mensajeText');
+                                                            mensajeWave.classList.remove('d-none', 'alert-success');
+                                                            mensajeWave.classList.add('alert-danger');
+                                                            mensajeText.textContent = 'Error processing the request.';
+                                                        });
+                                            });
+                                        }
+
+
+
+
+
                                         $(document).ready(function () {
                                             $('#candidatos').DataTable();
-                                        });
+                                        }
+                                        );
 
 
 

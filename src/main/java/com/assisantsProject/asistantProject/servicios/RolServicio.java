@@ -7,6 +7,7 @@ package com.assisantsProject.asistantProject.servicios;
 import com.assisantsProject.asistantProject.entidades.Rol;
 import com.assisantsProject.asistantProject.repositorios.RolRepositorio;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,5 +22,14 @@ public class RolServicio {
     
     public List<Rol> listaRoles(){
         return rolRepositorio.findAll();
+    }
+    public Rol listarPorId(String rol){
+        Optional<Rol> res = rolRepositorio.findById(rol);
+        if(res.isPresent()){
+            Rol role = res.get();
+            return role;
+        }else{
+            return null;
+        }
     }
 }

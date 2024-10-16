@@ -14,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RolRepositorio extends JpaRepository<Rol, String>{
-    
+   public Rol findFirstByNombre(String nombre);
 }

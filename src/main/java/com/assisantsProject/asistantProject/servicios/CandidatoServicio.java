@@ -6,6 +6,7 @@ package com.assisantsProject.asistantProject.servicios;
 
 import com.assisantsProject.asistantProject.entidades.Archivo;
 import com.assisantsProject.asistantProject.entidades.Candidato;
+import com.assisantsProject.asistantProject.entidades.Wave;
 import com.assisantsProject.asistantProject.repositorios.CandidatoRepositorio;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,8 +29,14 @@ public class CandidatoServicio {
     
     @Autowired
     private ArchivoServicio archivoServicio;
+    
+    @Autowired
+    private WaveServicio waveServicio;
 
     public Candidato registrarCandidato(Candidato candidato) {
+        Wave wa = new Wave(null, "generico", null);
+        waveServicio.registrarWave(wa);
+        candidato.setWave(wa);
         candidato.setEstado(true);
         candidatoRepositorio.save(candidato);
         return candidato;

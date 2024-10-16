@@ -47,9 +47,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaExpedicion')}" th:text="${errors.fechaExpedicion}"></div>
                     </div>
                     <div class="col-12">
-                        <label for="inputName" class="form-label">Wave(Ingresa la wave que te indicaron): </label>
-                        <input type="text" th:value="${candidato.wave}" name="wave"  class="form-control" id="inputName" >
-                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('wave')}" th:text="${errors.wave}"></div>
+                        <select name="wave" id="waveSelect" class="form-control">
+                            <option value="" disabled selected>Seleccionar wave</option>
+                            <option th:each="wave : ${listaWave}" th:value="${wave.id}" th:text="${wave.nombre}"></option>
+                        </select>
                     </div>
 
                     <div class="col-md-2">

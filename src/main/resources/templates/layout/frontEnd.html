@@ -10,6 +10,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <meta name="viewport" content="width=device-width, initial-scale=1">
                 <meta name="description" content="">
                     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+                        <meta name="_csrf" th:content="${_csrf.token}"/>
+                        <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
                         <meta name="generator" content="Hugo 0.88.1">
                             <title>Herramienta</title>
                             <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
@@ -100,6 +102,34 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                                                     </div>
                                                                                 </div>
                                                                             </footer>
+                                                                            <div th:fragment="modal">
+                                                                                <div class="modal fade" id="modalRegistrarWave" tabindex="-1" aria-labelledby="modalRegistrarWaveLabel" aria-hidden="true">
+                                                                                    <div class="modal-dialog">
+                                                                                        <div class="modal-content">
+                                                                                            <div class="modal-header">
+                                                                                                <h5 class="modal-title" id="modalRegistrarWaveLabel">Registrar Wave</h5>
+                                                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                                            </div>
+                                                                                            <div class="modal-body">
+                                                                                                <!-- Add an ID to the form for easier selection in JS -->
+                                                                                                <form id="registrarWaveForm" th:object="${wave}">
+                                                                                                    <div class="mb-3">
+                                                                                                        <label for="nombreWave" class="form-label">Nombre de la Wave</label>
+                                                                                                        <input type="text" th:field="*{nombre}" class="form-control" id="nombreWave" name="nombre" required>
+                                                                                                    </div>
+                                                                                                    <button type="submit" class="btn btn-primary">Registrar</button>
+                                                                                                </form>
+                                                                                                <!-- Placeholder for any potential response message -->
+                                                                                                <div id="mensajeWave" class="alert alert-dismissible fade show d-none">
+                                                                                                    <span id="mensajeText"></span>
+                                                                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
 
                                                                             <div th:fragment="scripts">
                                                                                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

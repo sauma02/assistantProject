@@ -50,7 +50,7 @@ public class ExcelServicio {
                 row.createCell(4).setCellValue(candidato.getFechaExpedicion());
                 row.createCell(5).setCellValue(candidato.getFechaNacimiento());
                 row.createCell(6).setCellValue(candidato.isEstado() ? "Activo" : "Inactivo");
-                row.createCell(7).setCellValue(candidato.getWave());
+                row.createCell(7).setCellValue(candidato.getWave().getNombre());
             }
 
             workbook.write(out);

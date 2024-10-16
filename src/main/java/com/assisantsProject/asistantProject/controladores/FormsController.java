@@ -8,11 +8,13 @@ import com.assisantsProject.asistantProject.entidades.Archivo;
 import com.assisantsProject.asistantProject.entidades.Candidato;
 import com.assisantsProject.asistantProject.entidades.Rol;
 import com.assisantsProject.asistantProject.entidades.Usuario;
+import com.assisantsProject.asistantProject.entidades.Wave;
 import com.assisantsProject.asistantProject.repositorios.ArchivoRepositorio;
 import com.assisantsProject.asistantProject.servicios.ArchivoServicio;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
 import com.assisantsProject.asistantProject.servicios.RolServicio;
 import com.assisantsProject.asistantProject.servicios.UsuarioServicio;
+import com.assisantsProject.asistantProject.servicios.WaveServicio;
 import com.assisantsProject.asistantProject.utilidades.archivosUploads;
 import jakarta.validation.Valid;
 import java.nio.file.Files;
@@ -52,7 +54,9 @@ public class FormsController {
     private ArchivoServicio archivoServicio;
     @Autowired
     private RolServicio rolServicio;
-
+    @Autowired
+    private WaveServicio waveServicio;
+    
     @Value("${valor.ruta}")
     private String ruta;
 
@@ -68,7 +72,7 @@ public class FormsController {
     public String registrarCandidato(Model model) {
         model.addAttribute("usuario", new Usuario());
         model.addAttribute("rol", rolServicio.listaRoles());
-        return "registrarUsuario";
+        return "formularios/registrarUsuario";
 
     }
 
@@ -81,6 +85,9 @@ public class FormsController {
                 flash.addFlashAttribute("mensaje", "Este correo ya se encuentra registrado");
                 return "redirect:/formularios/registrarUsuario";
             }
+            Rol rol = rolServicio.listarPorId(usuario.getRol().getId());
+            
+            usuario.setRol(rol);
             usuarioServicio.registrarUsuario(usuario);
             flash.addFlashAttribute("clase", "success");
             flash.addFlashAttribute("mensaje", "Exito al registrar");
@@ -97,11 +104,12 @@ public class FormsController {
     @PostMapping("/editarCandidato")
     public String editarCandidatoForm(@RequestParam("id") String id, @RequestParam("nombre") String nombre, @RequestParam("correo") String correo, @RequestParam("contacto") String contacto,
             @RequestParam("tipoDoc") String tipoDoc, @RequestParam("doc") String doc, @RequestParam("fechaExpedicion") String fechaExpedicion,
-            @RequestParam("wave") String wave, @RequestParam("fechaNacimiento") String fechaNacimiento, @RequestParam("equipo") String equipoId,
+            @RequestParam("wave") String waveId, @RequestParam("fechaNacimiento") String fechaNacimiento, @RequestParam("equipo") String equipoId,
             RedirectAttributes flash, Model model, @RequestParam("archivos[]") MultipartFile[] files) {
         try {
             Candidato can = candidatoServicio.listarPorId(id);
             Usuario u = usuarioServicio.listarPorId(equipoId);
+            Wave wave = waveServicio.listarWavePorId(id);
             can.setNombre(nombre);
             can.setCorreo(correo);
             can.setContacto(contacto);
@@ -251,7 +259,7 @@ public class FormsController {
             candidatoServicio.registrarCandidato(candidato);
 
             // Crear directorio para guardar archivos
-            Path ruta1 = Paths.get(ruta + "archivos/" + candidato.getNombre().trim() + "/");
+            Path ruta1 = Paths.get(ruta + "archivos/" + candidato.getNombre().trim() + "/".trim());
             Files.createDirectories(ruta1);
 
             // Lista para almacenar los archivos procesados
@@ -287,7 +295,7 @@ public class FormsController {
 
             flash.addFlashAttribute("clase", "success");
             flash.addFlashAttribute("mensaje", "Éxito al registrarte y enviar archivos.");
-            return "redirect:/formularios/archivos_respuesta";
+            return "formularios/archivos_respuesta";
 
         } catch (Exception e) {
             e.printStackTrace();

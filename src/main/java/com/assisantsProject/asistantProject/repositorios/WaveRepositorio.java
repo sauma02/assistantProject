@@ -14,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface WaveRepositorio extends JpaRepository<Wave, String> {
-    
+    public Wave findFirstByNombre(String nombre);
 }

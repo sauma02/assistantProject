@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class Wave {
     private String id;
     @NotEmpty(message="esta vacio")
     private String nombre;
-    @ManyToMany
+    @OneToMany
     private List<Candidato> candidato;
 
     public Wave() {

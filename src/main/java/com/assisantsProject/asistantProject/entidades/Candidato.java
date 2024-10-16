@@ -42,7 +42,8 @@ public class Candidato {
     private String doc;
     @NotEmpty(message = "esta vacio")
     private String fechaExpedicion;
-    private String wave;
+    @ManyToOne
+    private Wave wave;
     private boolean estado;
     @NotEmpty(message = "esta vacio")
     private String fechaNacimiento;
@@ -56,7 +57,7 @@ public class Candidato {
     public Candidato() {
     }
 
-    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, String wave, boolean estado, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
+    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, Wave wave, boolean estado, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
@@ -70,6 +71,8 @@ public class Candidato {
         this.archivos = archivos;
         this.equipo = equipo;
     }
+
+    
     
     public boolean isActivo(boolean estado){
         if(estado){
@@ -80,10 +83,7 @@ public class Candidato {
         
     }
 
-    @Override
-    public String toString() {
-        return "Candidato{" + "id=" + id + ", nombre=" + nombre + ", correo=" + correo + ", contacto=" + contacto + ", tipoDoc=" + tipoDoc + ", doc=" + doc + ", fechaExpedicion=" + fechaExpedicion + ", wave=" + wave + ", estado=" + estado + ", fechaNacimiento=" + fechaNacimiento + ", archivos=" + archivos + ", equipo=" + equipo + '}';
-    }
+   
 
    
 

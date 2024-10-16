@@ -46,18 +46,20 @@ public class webConfig implements WebMvcConfigurer {
         try {
             return http.formLogin(form -> form
                     .loginPage("/login")
+                    .failureUrl("/login")
                     .successHandler(myAuthenticationSuccessHandler()).permitAll()
                     .permitAll()
             )
                     .authorizeHttpRequests(res -> res
                     .requestMatchers("/login").permitAll()
-                    .requestMatchers("/**", "/formularios/registrarUsuario", "/formularios/editarCandidato",
-                             "/formularios/registrarWave")
-                    .hasAnyAuthority("admin", "usuario")
                     .requestMatchers("/formularios/registrarCandidato").permitAll()
                     .requestMatchers("/static/**", "/js/**", "/css/**",
                             "/images/**", "/login/**", "/templates/**")
-                    .permitAll()
+                    .permitAll()        
+                    .requestMatchers("/**", "/formularios/registrarUsuario", "/formularios/editarCandidato",
+                             "/formularios/registrarWave")
+                    .hasAnyAuthority("admin", "usuario")
+                    
                     .anyRequest().authenticated()
                     )
                     .userDetailsService(usuarioServicio)

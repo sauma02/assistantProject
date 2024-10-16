@@ -7,10 +7,12 @@ package com.assisantsProject.asistantProject.controladores;
 import com.assisantsProject.asistantProject.config.CustomSuccessHandler;
 import com.assisantsProject.asistantProject.entidades.Candidato;
 import com.assisantsProject.asistantProject.entidades.Usuario;
+import com.assisantsProject.asistantProject.entidades.Wave;
 import com.assisantsProject.asistantProject.servicios.CandidatoServicio;
 import com.assisantsProject.asistantProject.servicios.ExcelServicio;
 import com.assisantsProject.asistantProject.servicios.UsuarioServicio;
 import com.assisantsProject.asistantProject.servicios.WaveServicio;
+import jakarta.validation.Valid;
 import java.io.ByteArrayInputStream;
 
 import java.io.IOException;
@@ -44,6 +46,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,10 +77,10 @@ public class HomeController {
     private WaveServicio waveServicio;
     @Autowired
     private UsuarioServicio usuarioServicio;
-    
+
     @Autowired
     private AuthenticationManager authenticationManager;
-    
+
     @Autowired
     private CustomSuccessHandler authenticationSuccessHandler;
 
@@ -85,44 +88,74 @@ public class HomeController {
     public String home(Model model) {
         return "home";
     }
+
     @GetMapping("/login")
-    public String loginForm(){
+    public String loginForm() {
         return "login";
     }
-    @PostMapping("/login")
-    public String loginSubmit(@RequestParam("username") String username, @RequestParam("password") String password, ModelMap map){
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-    try {
-        Usuario user = usuarioServicio.listarUsuarioPorUsername(username);
-        if(user.getPassword().equals(password)){
-            // Authenticate the user
-        Authentication authentication = authenticationManager.authenticate(token);
-        
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        
-        // Determine the redirect URL using the authentication success handler
-        String redirectUrl = authenticationSuccessHandler.determineTargetUrlForAuthentication(authentication);
-    
-        // Redirect the user to the determined URL
-        return "redirect:" + redirectUrl;
-        }else{
-           
-        return "redirect:/login";
+
+    @PostMapping("/registrarWave")
+    @ResponseBody // Ensures response is serialized into JSON
+    public ResponseEntity<Map<String, String>> registrarWaveForm(@Valid Wave wave, BindingResult result) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+
+            if (waveServicio.listarWavePorNombre(wave.getNombre()) != null) {
+                response.put("clase", "error");
+                response.put("mensaje", "Esta wave ya se encuentra registrada");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response); // Return conflict if wave exists
+            }
+
+            waveServicio.registrarWave(wave);
+            response.put("clase", "success");
+            response.put("mensaje", "Exito al registrar wave");
+            return ResponseEntity.ok(response); // Return success response
+
+        } catch (Exception e) {
+            response.put("clase", "error");
+            response.put("mensaje", "Ocurrió un error al registrar la wave");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response); // Return server error
         }
-        
-    } catch (AuthenticationException e) {
-        e.printStackTrace();
-        if(e.getCause() != null){
-            System.err.println("Error: "+e.getCause().toString());
-        }
-        return "error.html";
     }
-    
-}
+
+    @PostMapping("/login")
+    public String loginSubmit(@RequestParam("username") String username, @RequestParam("password") String password, RedirectAttributes flash, ModelMap map) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+        try {
+            Usuario user = usuarioServicio.listarUsuarioPorUsername(username);
+            if (user.getPassword().equals(password)) {
+                // Authenticate the user
+                Authentication authentication = authenticationManager.authenticate(token);
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                // Determine the redirect URL using the authentication success handler
+                String redirectUrl = authenticationSuccessHandler.determineTargetUrlForAuthentication(authentication);
+
+                // Redirect the user to the determined URL
+                return "redirect:" + redirectUrl;
+            } else {
+                flash.addAttribute("class", "danger");
+                flash.addAttribute("mensaje", "Usuario y/o contraseña incorrecto");
+
+                return "redirect:/login";
+            }
+
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            if (e.getCause() != null) {
+                System.err.println("Error: " + e.getCause().toString());
+            }
+            return "error.html";
+        }
+
+    }
 
     @GetMapping("/listaCandidatos")
     public String listaCandidatos(Model model) {
         List<Candidato> listaCandidatos = candidatoServicio.listarCandidatos();
+
         model.addAttribute("listaCandidatos", listaCandidatos);
 
         return "listaCandidatos";
@@ -226,29 +259,34 @@ public class HomeController {
     public ResponseEntity<Map<String, String>> asignarWave(@PathVariable("id") String id, @RequestParam("wave") String wave) {
         Map<String, String> response = new HashMap<>();
         try {
-            System.out.println(id);
+            // Verifica si el valor de la wave es nulo o vacío
+            if (wave == null || wave.isEmpty()) {
+                response.put("clase", "error");
+                response.put("mensaje", "Debe seleccionar una wave válida.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Continuar con la lógica de asignar la wave
+            Wave wa = waveServicio.listarWavePorNombre(wave);
             Candidato can = candidatoServicio.listarPorId(id);
-            can.setWave(wave);
+            can.setWave(wa);
             candidatoServicio.editarCandidato(can);
+
             response.put("clase", "success");
             response.put("mensaje", "Éxito al cambiar wave");
-
         } catch (Exception e) {
             e.printStackTrace();
             response.put("clase", "error");
             response.put("mensaje", e.getMessage());
-
         }
         return ResponseEntity.ok(response);
     }
-    
+
     @ModelAttribute
-    public void usuario(@AuthenticationPrincipal UserDetails userDetails, Model model){
-        String username = userDetails.getUsername();
-        
-        model.addAttribute("usuario", username);
+    public void wave(Model model) {
+        model.addAttribute("wave", new Wave());
     }
-    
+
     @ModelAttribute
     public void listaWave(Model model) {
         model.addAttribute("listaWave", waveServicio.listarWaves());

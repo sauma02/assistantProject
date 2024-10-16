@@ -7,6 +7,7 @@ package com.assisantsProject.asistantProject.servicios;
 import com.assisantsProject.asistantProject.entidades.Wave;
 import com.assisantsProject.asistantProject.repositorios.WaveRepositorio;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,4 +27,18 @@ public class WaveServicio {
     public List<Wave> listarWaves(){
         return waveRepositorio.findAll();
     }
+    
+    public Wave listarWavePorId(String id){
+        Optional<Wave> res = waveRepositorio.findById(id);
+        if(res.isPresent()){
+            Wave wa = res.get();
+            return wa;
+        }else{
+            return null;
+        }
+    }
+    
+  public Wave listarWavePorNombre(String nombre){
+      return waveRepositorio.findFirstByNombre(nombre);
+  }
 }
