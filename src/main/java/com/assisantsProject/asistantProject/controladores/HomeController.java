@@ -23,9 +23,12 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.eclipse.angus.mail.iap.Response;
+import static org.hibernate.internal.CoreLogging.logger;
+import static org.hibernate.internal.HEMLogging.logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -56,6 +59,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 import static org.springframework.web.servlet.function.RequestPredicates.headers;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -67,6 +72,9 @@ public class HomeController {
     @Value("${valor.ruta}")
     private String ruta;
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+
+    
     @Autowired
     private CandidatoServicio candidatoServicio;
 
@@ -259,27 +267,48 @@ public class HomeController {
     public ResponseEntity<Map<String, String>> asignarWave(@PathVariable("id") String id, @RequestParam("wave") String wave) {
         Map<String, String> response = new HashMap<>();
         try {
-            // Verifica si el valor de la wave es nulo o vacío
+            // Validate wave
             if (wave == null || wave.isEmpty()) {
                 response.put("clase", "error");
                 response.put("mensaje", "Debe seleccionar una wave válida.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Continuar con la lógica de asignar la wave
-            Wave wa = waveServicio.listarWavePorNombre(wave);
+            // Validate candidate ID
             Candidato can = candidatoServicio.listarPorId(id);
+            if (can == null) {
+                response.put("clase", "error");
+                response.put("mensaje", "Candidato no encontrado.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            // Assign wave
+            System.out.println(wave);
+            Wave wa = waveServicio.listarWavePorId(wave);
+            System.out.println(wa);
+            if (wa == null) {
+                response.put("clase", "error");
+                response.put("mensaje", "Wave no encontrada.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
             can.setWave(wa);
             candidatoServicio.editarCandidato(can);
 
             response.put("clase", "success");
             response.put("mensaje", "Éxito al cambiar wave");
-        } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseEntity.ok(response);
+        } catch (NoSuchElementException e) {
             response.put("clase", "error");
-            response.put("mensaje", e.getMessage());
+            response.put("mensaje", "Error en la búsqueda de datos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        } catch (Exception e) {
+            // Use a logging framework instead of printStackTrace
+            logger.error("Error asignando wave: ", e);
+            response.put("clase", "error");
+            response.put("mensaje", "Ocurrió un error inesperado.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-        return ResponseEntity.ok(response);
     }
 
     @ModelAttribute

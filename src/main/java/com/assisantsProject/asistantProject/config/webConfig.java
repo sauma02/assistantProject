@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,6 +54,7 @@ public class webConfig implements WebMvcConfigurer {
                     .authorizeHttpRequests(res -> res
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/formularios/registrarCandidato").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/asignarWave/**").hasAnyRole("admin", "usuario")
                     .requestMatchers("/static/**", "/js/**", "/css/**",
                             "/images/**", "/login/**", "/templates/**")
                     .permitAll()        
@@ -65,7 +67,7 @@ public class webConfig implements WebMvcConfigurer {
                     .userDetailsService(usuarioServicio)
                     .build();
         } catch (Exception e) {
-            throw new Exception("Error at: " + e.getCause());
+            throw new Exception("Error at: " + e.getMessage(), e);
         }
     }
 
