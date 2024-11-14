@@ -48,20 +48,20 @@ public class webConfig implements WebMvcConfigurer {
             return http.formLogin(form -> form
                     .loginPage("/login")
                     .failureUrl("/login")
-                    .successHandler(myAuthenticationSuccessHandler()).permitAll()
+                    .successHandler(myAuthenticationSuccessHandler())
                     .permitAll()
             )
                     .authorizeHttpRequests(res -> res
-                    .requestMatchers("/login").permitAll()
-                    .requestMatchers("/formularios/registrarCandidato").permitAll()
-                    .requestMatchers(HttpMethod.POST,"/asignarWave/**").hasAnyRole("admin", "usuario")
-                    .requestMatchers("/static/**", "/js/**", "/css/**",
-                            "/images/**", "/login/**", "/templates/**")
-                    .permitAll()        
-                    .requestMatchers("/**", "/formularios/registrarUsuario", "/formularios/editarCandidato",
-                             "/formularios/registrarWave")
+                    // Publicly accessible endpoints
+                    .requestMatchers("/login", "/formularios/registrarCandidato").permitAll()
+                    .requestMatchers("/static/**", "/js/**", "/css/**", "/images/**").permitAll()
+                    // POST access for specific roles
+                    .requestMatchers(HttpMethod.POST, "/asignarWave/**").hasAnyRole("admin", "usuario", "asistente")
+                    // Admin and user authority only
+                    .requestMatchers("/**", "/formularios/registrarUsuario",
+                            "/formularios/editarCandidato", "/formularios/registrarWave")
                     .hasAnyAuthority("admin", "usuario")
-                    
+                    // All other requests require authentication
                     .anyRequest().authenticated()
                     )
                     .userDetailsService(usuarioServicio)

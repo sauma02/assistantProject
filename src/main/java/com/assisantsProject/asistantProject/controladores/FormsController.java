@@ -88,6 +88,8 @@ public class FormsController {
             Rol rol = rolServicio.listarPorId(usuario.getRol().getId());
             
             usuario.setRol(rol);
+            usuario.getRol().setDescripcion("asistente");
+            
             usuarioServicio.registrarUsuario(usuario);
             flash.addFlashAttribute("clase", "success");
             flash.addFlashAttribute("mensaje", "Exito al registrar");
