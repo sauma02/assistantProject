@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -56,6 +58,8 @@ public class FormsController {
     private RolServicio rolServicio;
     @Autowired
     private WaveServicio waveServicio;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     
     @Value("${valor.ruta}")
     private String ruta;
@@ -89,7 +93,7 @@ public class FormsController {
             
             usuario.setRol(rol);
             usuario.getRol().setDescripcion("asistente");
-            
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             usuarioServicio.registrarUsuario(usuario);
             flash.addFlashAttribute("clase", "success");
             flash.addFlashAttribute("mensaje", "Exito al registrar");
@@ -315,8 +319,13 @@ public class FormsController {
     @ModelAttribute
     public void equipo(Model model) {
         List<Usuario> listaEquipo = usuarioServicio.listarUsuarios();
-
-        model.addAttribute("listaEquipo", listaEquipo);
+        List<Usuario> listaFiltrada = listaEquipo.stream() //Se llama al stream de la lista para poder realizar un filtrado con filter e
+        .filter(e -> !"Administrador".equals(e.getRol().getDescripcion()) &&   //de esta manera trayendo a la lista de manera dina,ica solo el rol asistente
+        !"Supervisor".equals(e.getRol().getDescripcion())).collect(Collectors.toList());
+        
+        
+        
+        model.addAttribute("listaEquipo", listaFiltrada);
     }
     @ModelAttribute
     public void rol(Model model){

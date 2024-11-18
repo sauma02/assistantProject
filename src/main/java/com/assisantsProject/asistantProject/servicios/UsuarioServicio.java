@@ -47,7 +47,7 @@ private PasswordEncoder passwordEncoder;
         }
     }
     public Usuario registrarUsuario(Usuario usuario){
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        
         usuarioRepositorio.save(usuario);
         return usuario;
     }
