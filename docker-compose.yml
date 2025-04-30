@@ -1,0 +1,15 @@
+version: '3'
+services:
+  aurora:
+    build: assistant
+    mem_limit: 512m
+    ports:
+      - '4040:4040'
+    environment:
+      DB_USERNAME: adminIqor@213.210.13.192
+      DB_PASSWORD: supergamo123
+      SV_PORT: 4040
+      SV_IP: 213.210.13.192
+      DB_NAME: jdbc:mysql://191.95.33.234:3307/project?zeroDateTimeBehavior=CONVERT_TO_NULL
+      
+    restart: always
