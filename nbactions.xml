@@ -100,4 +100,20 @@
                 <Env.DBNAME>jdbc:mysql://localhost:3306/project?zeroDateTimeBehavior=CONVERT_TO_NULL</Env.DBNAME>
             </properties>
         </action>
+        <action>
+            <actionName>build-with-dependencies</actionName>
+            <reactor>also-make</reactor>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>install</goal>
+            </goals>
+            <properties>
+                <Env.DBUSER>adminIqor</Env.DBUSER>
+                <Env.DBPASSWORD>Supergamo123@.</Env.DBPASSWORD>
+                <Env.PORT>5000</Env.PORT>
+                <Env.DBNAME>jdbc:mysql://localhost:3306/project?zeroDateTimeBehavior=CONVERT_TO_NULL</Env.DBNAME>
+            </properties>
+        </action>
     </actions>
