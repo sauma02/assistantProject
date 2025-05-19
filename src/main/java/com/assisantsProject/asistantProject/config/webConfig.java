@@ -35,6 +35,9 @@ public class webConfig implements WebMvcConfigurer {
     private String ruta;
     @Value("${valor.form}")
     private String form;
+    
+
+
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

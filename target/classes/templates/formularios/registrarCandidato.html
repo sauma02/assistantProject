@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
+
+    </head>
+    <body class="container">
+        <main class="container-fluid">
+            <div id="opciones">
+                <button id="mostrarRegistro" class="btn btn-primary">Registrarme</button>
+                <hr>
+                    <button id="mostrarActualizar" class="btn btn-primary">Actualizar archivos</button>
+            </div>
+
+            <div id="registrar" style="display: none;">
+                <form th:action="@{/formularios/registrarCandidato}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data" >
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Nombre:</label>
+                        <input type="text" th:field="*{nombre}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('nombre')}" th:text="${errors.nombre}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Email:</label>
+                        <input type="email" th:field="*{correo}" class="form-control" id="inputEmail4">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('correo')}" th:text="${errors.correo}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Contacto:</label>
+                        <input type="text" th:field="*{contacto}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('contacto')}" th:text="${errors.contacto}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Tipo de documento:</label>
+                        <input type="text" th:field="*{tipoDoc}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('tipoDoc')}" th:text="${errors.tipoDoc}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Numero de cedula:</label>
+                        <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Fecha de Expedicion:</label>
+                        <input type="text" th:field="*{fechaExpedicion}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaExpedicion')}" th:text="${errors.fechaExpedicion}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputName" class="form-label">Fecha de nacimiento(dd/mm/yyyy):</label>
+                        <input type="text" th:field="*{fechaNacimiento}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('fechaNacimiento')}" th:text="${errors.fechaNacimiento}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputZip" class="form-label">Archivos:</label>
+                        <input type="file" name="archivos[]" class="form-control" id="inputZip" multiple>
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('archivos')}" th:text="${errors.archivos}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Encargado del proceso:</label>
+                        <select th:field="*{equipo}" id="equipo" class="form-control">
+                            <option type="text" 
+                                    th:each="lista : ${listaEquipo}" 
+                                    th:value="${lista.id}" 
+                                    th:text="${lista.usuario}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                    <div th:if="${mensaje != null}" 
+                         th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
+                        <span th:text="${mensaje}"></span> 
+                        <button th:if="${mensaje != null}" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                </form>
+            </div>
+            <div id="actualizar" style="display: none;">
+                <form th:action="@{/formularios/actualizarArchivos}" th:object="${candidato}" class="row g-3" method="POST" enctype="multipart/form-data">
+                    <div class="col-12">
+                        <label for="inputName" class="form-label">Ingresa tu numero de cedula:</label>
+                        <input type="text" th:field="*{doc}" class="form-control" id="inputName" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('doc')}" th:text="${errors.doc}"></div>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="inputZip" class="form-label">Archivos:</label>
+                        <input type="file" name="archivos[]" class="form-control" id="inputZip" multiple>
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('archivos')}" th:text="${errors.archivos}"></div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+
+
+            </div>
+
+        </main>
+    </body>
+    <div th:replace="layout/frontEnd :: scripts"></div>
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            $('#mostrarRegistro').on('click', function () {
+                $('#registrar').show();
+                $('#actualizar').hide();
+            });
+            $('#mostrarActualizar').on('click', function () {
+                $('#registrar').hide();
+                $('#actualizar').show();
+            });
+        });
+
+    </script>
+</html>

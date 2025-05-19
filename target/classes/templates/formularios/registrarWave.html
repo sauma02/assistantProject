@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
+
+    </head>
+    <body class="container">
+        <main class="container-fluid">
+            <div id="registrarWave" style="display: none;">
+                <form th:action="@{/formularios/registrarWave}" th:object="${wave}" class="row g-3" method="POST">
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Nombre:</label>
+                        <input type="text" th:field="*{nombre}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('nombre')}" th:text="${errors.nombre}"></div>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </main>
+    </body>
+    <div th:replace="layout/frontEnd :: scripts"></div>
+
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace ="layout/frontEnd :: head(~{title}, ~{links})"></head>
+    <body>
+        <header th:replace="layout/frontEnd :: header"></header>
+        <main class="container-fluid">
+            <div style="display: grid;
+                 place-items: center;
+                 margin: auto;"><h1>Bienvenido al administrador de archivos</h1>
+                <img th:src="@{https://www.camp-firefox.de/attachment/43434-deulbij-d64de595-c42e-4a40-9f02-b74db8def4d3-gif/}" width="500" height="600" >
+            </div>
+        </main>
+        
+        <footer th:replace="layout/frontEnd :: footer"></footer>
+        <div th:replace="layout/frontEnd :: scripts"></div>
+    </body>
+</html>

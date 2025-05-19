@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="layout/frontEnd :: head(~{::title}, ~{::links})">
+
+    </head>
+    <body class="container">
+        <main class="container-fluid">
+            <div id="registrar" style="">
+                <form th:action="@{/formularios/registrarUsuario}" th:object="${usuario}" class="row g-3" method="POST" enctype="multipart/form-data" >
+                    <div class="col-md-6">
+                        <label for="inputName" class="form-label">Nombre:</label>
+                        <input type="text" th:field="*{usuario}" class="form-control" id="inputName">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('usuario')}" th:text="${errors.usuario}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="inputEmail4" class="form-label">Email:</label>
+                        <input type="email" th:field="*{correo}" class="form-control" id="inputEmail4">
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('password')}" th:text="${errors.correo}"></div>
+                    </div>
+
+                    <div class="col-12">
+                        <label for="inputPassword" class="form-label">Contraseña(Utilizar mayusculas y caracteres especiales):</label>
+                        <input type="password" th:field="*{password}" class="form-control" id="inputPassword" >
+                            <div class="alert alert-danger" th:if="${errors != null && errors.containsKey('password')}" th:text="${errors.password}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rol">Asignar Rol:</label>
+                        <select th:field="*{rol}" id="rol" class="form-control">
+                            <option value="" disabled selected>Selecciona un rol</option>
+                            <option th:each="rol : ${rol}" th:value="${rol.id}" th:text="${rol.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                        <a th:href="@{/}" class="btn btn-success">Regresar</a>
+                    </div>
+                    <div th:if="${mensaje != null}" 
+                         th:class="'alert alert-' + ${clase} + ' alert-dismissable fade show'">
+                        <span th:text="${mensaje}"></span> 
+                        <button th:if="${mensaje != null}" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                </form>
+            </div>
+
+
+        </main>
+    </body>
+    <div th:replace="layout/frontEnd :: scripts"></div>
+    <script th:inline="javascript">
+        // Obteniendo valores dinámicos de Thymeleaf
+        let status = /*[[${clase}]]*/; // Ejemplo: 'success', 'error', o vacío
+                let mensaje = /*[[${mensaje}]]*/; // Mensaje a mostrar, o vacío
+
+        // Verifica si 'status' tiene un valor válido
+        if (status && mensaje) {
+            if (status === 'success') {
+                Swal.fire({
+                    icon: "success",
+                    title: "Éxito",
+                    text: mensaje
+                }).then(() => {
+                    location.reload(); // Recargar página en caso de éxito
+                });
+            } else if (status === 'error') {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: mensaje
+                });
+            }
+        }
+
+
+    </script>
+</html>

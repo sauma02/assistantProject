@@ -44,6 +44,7 @@ public class Archivo {
         this.ruta = ruta;
         this.candidato = candidato;
     }
+    
 
     @Override
     public String toString() {
@@ -52,6 +53,6 @@ public class Archivo {
 
     
 
-
+    
 
 }

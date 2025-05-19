@@ -58,7 +58,8 @@ public class Usuario implements UserDetails {
         this.rol = rol;
         this.candidatos = candidatos;
     }
-
+    
+    
     @Override
     public String toString() {
         return "Usuario{" + "id=" + id + ", usuario=" + usuario + ", password=" + password + ", correo=" + correo + ", rol=" + rol + ", candidatos=" + candidatos + '}';
@@ -110,6 +111,11 @@ public class Usuario implements UserDetails {
     @Override
     public String getUsername() {
         return this.usuario;
+    }
+
+    @Override
+    public String getPassword() {
+     return null;
     }
 
 }
