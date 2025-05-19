@@ -162,7 +162,7 @@
                 <configuration> 
                     <archive> 
                         <manifest> 
-                            <mainClass>com.example.Main</mainClass> 
+                            <mainClass>com.assisantsProject.asistantProject.AsistantProjectApplication</mainClass> 
                         </manifest> 
                     </archive> 
                 </configuration> 
