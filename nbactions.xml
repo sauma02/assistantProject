@@ -116,4 +116,26 @@
                 <Env.DBNAME>jdbc:mysql://localhost:3306/project?zeroDateTimeBehavior=CONVERT_TO_NULL</Env.DBNAME>
             </properties>
         </action>
+        <action>
+            <actionName>debug.single.main</actionName>
+            <packagings>
+                <packaging>*</packaging>
+            </packagings>
+            <goals>
+                <goal>process-test-classes</goal>
+                <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
+            </goals>
+            <properties>
+                <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
+                <exec.executable>java</exec.executable>
+                <exec.mainClass>${packageClassName}</exec.mainClass>
+                <exec.classpathScope>${classPathScope}</exec.classpathScope>
+                <jpda.listen>true</jpda.listen>
+                <Env.DBUSER>adminIqor</Env.DBUSER>
+                <Env.DBPASSWORD>Supergamo123@.</Env.DBPASSWORD>
+                <Env.PORT>5000</Env.PORT>
+                <Env.DBNAME>jdbc:mysql://localhost:3306/project?zeroDateTimeBehavior=CONVERT_TO_NULL</Env.DBNAME>
+            </properties>
+        </action>
     </actions>

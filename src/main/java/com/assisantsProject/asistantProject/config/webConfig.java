@@ -50,7 +50,9 @@ public class webConfig implements WebMvcConfigurer {
         try {
             return http.formLogin(form -> form
                     .loginPage("/login")
-                    .failureUrl("/login")
+                    .usernameParameter("username")
+                    .passwordParameter("password")
+                    .failureUrl("/login?error=true")
                     .successHandler(myAuthenticationSuccessHandler())
                     .permitAll()
             )
@@ -61,7 +63,7 @@ public class webConfig implements WebMvcConfigurer {
                     // POST access for specific roles
                     .requestMatchers(HttpMethod.POST, "/asignarWave/**").hasAnyRole("admin", "usuario", "asistente")
                     // Admin and user authority only
-                    .requestMatchers("/**", "/formularios/registrarUsuario",
+                    .requestMatchers("/**", "/", "/formularios/registrarUsuario",
                             "/formularios/editarCandidato", "/formularios/registrarWave")
                     .hasAnyAuthority("admin", "usuario")
                     // All other requests require authentication

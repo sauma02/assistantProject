@@ -34,8 +34,8 @@ public class CandidatoServicio {
     private WaveServicio waveServicio;
 
     public Candidato registrarCandidato(Candidato candidato) {
-        Wave wa = new Wave(null, "generico", null);
-        waveServicio.registrarWave(wa);
+        Wave wa = waveServicio.listarWavePorNombre("generico");
+        
         candidato.setWave(wa);
         candidato.setEstado(true);
         candidatoRepositorio.save(candidato);

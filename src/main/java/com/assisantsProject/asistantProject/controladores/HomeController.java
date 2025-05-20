@@ -131,8 +131,10 @@ public class HomeController {
     @PostMapping("/login")
     public String loginSubmit(@RequestParam("username") String username, @RequestParam("password") String password, RedirectAttributes flash, ModelMap map) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+        System.out.println("Username: "+username + password);
         try {
             Usuario user = usuarioServicio.listarUsuarioPorUsername(username);
+         
             if (user.getPassword().equals(password)) {
                 // Authenticate the user
                 Authentication authentication = authenticationManager.authenticate(token);
