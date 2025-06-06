@@ -45,6 +45,7 @@ public class Candidato {
     @ManyToOne
     private Wave wave;
     private boolean estado;
+    private boolean blackListed;
     @NotEmpty(message = "esta vacio")
     private String fechaNacimiento;
    
@@ -57,7 +58,7 @@ public class Candidato {
     public Candidato() {
     }
 
-    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, Wave wave, boolean estado, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
+    public Candidato(String id, String nombre, String correo, String contacto, String tipoDoc, String doc, String fechaExpedicion, Wave wave, boolean estado,boolean blackListed, String fechaNacimiento, List<Archivo> archivos, Usuario equipo) {
         this.id = id;
         this.nombre = nombre;
         this.correo = correo;
@@ -70,17 +71,17 @@ public class Candidato {
         this.fechaNacimiento = fechaNacimiento;
         this.archivos = archivos;
         this.equipo = equipo;
+        this.blackListed = blackListed;
     }
 
     
     
     public boolean isActivo(boolean estado){
-        if(estado){
-            return true;
-        }else{
-            return false;
-        }
+        return estado;
         
+    }
+    public boolean isBlackListed(boolean blackListed){
+        return blackListed;
     }
 
    

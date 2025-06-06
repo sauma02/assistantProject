@@ -210,6 +210,30 @@ public class HomeController {
         }
         return ResponseEntity.ok(response);
     }
+    
+    @GetMapping("/cambiarBlackListed/{id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, String>> cambiarBlackListed(@PathVariable("id") String id){
+        Map<String,String> response = new HashMap<>();
+        try {
+            System.out.println(id);
+            Candidato can = candidatoServicio.listarPorId(id);
+            if(can.isBlackListed()){
+                can.setBlackListed(false);
+            } else{
+                can.setBlackListed(true);
+            }
+            candidatoServicio.editarCandidato(can);
+            response.put("clase", "success");
+            response.put("mensaje", "Éxito al cambiar blackListedStatus");
+            
+        } catch (Exception e) {
+             e.printStackTrace();
+            response.put("clase", "error");
+            response.put("mensaje", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/candidatos")
     public ResponseEntity<InputStreamResource> descargarExcel() {

@@ -58,8 +58,8 @@ public class webConfig implements WebMvcConfigurer {
             )
                     .authorizeHttpRequests(res -> res
                     // Publicly accessible endpoints
-                    .requestMatchers("/login", "/formularios/registrarCandidato").permitAll()
-                    .requestMatchers("/static/**", "/js/**", "/css/**", "/images/**").permitAll()
+                    .requestMatchers("/login", "/formularios/registrarCandidato", "/formularios/actualizarArchivos", "/formularios/archivos_respuesta").permitAll()
+                    .requestMatchers("/static/**", "/js/**", "/css/**", "/css/candidatoHome.css", "/images/**").permitAll()
                     // POST access for specific roles
                     .requestMatchers(HttpMethod.POST, "/asignarWave/**").hasAnyRole("admin", "usuario", "asistente")
                     // Admin and user authority only

@@ -27,7 +27,7 @@ public class ExcelServicio {
 
             // Encabezado
             String[] header = {"Nombre", "Correo", "Tipo de documento", "Numero de documento", "Fecha de expedicion", "Fecha de nacimiento",
-                    "Estado", "Wave"};
+                    "Estado","BlackListed", "Wave"};
             Row headerRow = sheet.createRow(0);
 
             for (int i = 0; i < header.length; i++) {
@@ -50,7 +50,8 @@ public class ExcelServicio {
                 row.createCell(4).setCellValue(candidato.getFechaExpedicion());
                 row.createCell(5).setCellValue(candidato.getFechaNacimiento());
                 row.createCell(6).setCellValue(candidato.isEstado() ? "Activo" : "Inactivo");
-                row.createCell(7).setCellValue(candidato.getWave().getNombre());
+                row.createCell(7).setCellValue(candidato.isBlackListed()? "BlackListed" : "No");
+                row.createCell(8).setCellValue(candidato.getWave().getNombre());
             }
 
             workbook.write(out);

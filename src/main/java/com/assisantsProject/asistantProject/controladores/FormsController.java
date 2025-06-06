@@ -89,6 +89,7 @@ public class FormsController {
                 flash.addFlashAttribute("mensaje", "Este correo ya se encuentra registrado");
                 return "redirect:/formularios/registrarUsuario";
             }
+            
             Rol rol = rolServicio.listarPorId(usuario.getRol().getId());
             
             usuario.setRol(rol);
@@ -238,9 +239,9 @@ public class FormsController {
 
         try {
             // Validar si la cédula ya está registrada
-            if (candidatoServicio.listarPorCedula(candidato.getDoc()) != null) {
+            if (candidatoServicio.listarPorCedula(candidato.getDoc()) != null || candidatoServicio.buscarPorCorreo(candidato.getCorreo()) != null) {
                 flash.addFlashAttribute("clase", "danger");
-                flash.addFlashAttribute("mensaje", "Esta cédula ya se encuentra registrada, seleccione actualizar.");
+                flash.addFlashAttribute("mensaje", "Esta cédula y/o correo ya se encuentra registrada, seleccione actualizar e ingrese su cedula.");
                 return "redirect:/formularios/registrarCandidato";
             }
 

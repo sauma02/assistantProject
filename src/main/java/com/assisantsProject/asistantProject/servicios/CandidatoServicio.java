@@ -38,8 +38,19 @@ public class CandidatoServicio {
         
         candidato.setWave(wa);
         candidato.setEstado(true);
+        candidato.setBlackListed(false);
         candidatoRepositorio.save(candidato);
         return candidato;
+    }
+    public Candidato buscarPorCorreo(String correo){
+        Optional<Candidato> res = candidatoRepositorio.findByCorreo(correo);
+        if(res.isPresent()){
+            Candidato can = res.get();
+            return can;
+        }else{
+            return null;
+        }
+       
     }
 
     public Candidato actualizarArchivos(Candidato candidato) {
@@ -102,6 +113,10 @@ public class CandidatoServicio {
             return null;
         }
     }
+    public boolean verificarCedula(String cedula){
+        Optional<Candidato> res = candidatoRepositorio.findByDoc(cedula);
+        return res.isPresent();
+    }
 
     public Map<String, Long> obtenerPorWaveYEstado() {
         List<Candidato> candidatos = candidatoRepositorio.findAll();
@@ -134,4 +149,9 @@ public class CandidatoServicio {
                 .collect(Collectors.groupingBy(c -> c.isActivo(true) ? "Activo" : "Inactivo",
                         Collectors.counting()));
     }
+    public Map<String, Long> obtenerPorBlackListed(){
+        return candidatoRepositorio.findAll().stream().collect(Collectors.groupingBy(c -> c.isBlackListed(true) ? "Not okay" : "Okay", 
+                Collectors.counting()));
+    }
+    
 }

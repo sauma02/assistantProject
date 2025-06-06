@@ -34,6 +34,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <th>Fecha de expedicion: </th>
                         <th>Wave: </th>
                         <th>Estado: </th>
+                        <th>Black Listed: </th>
                         <th>Archivos: </th>
                         <th>Assistant: </th>
                         <th>Acciones: </th>
@@ -63,7 +64,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
                         <td th:text="${lista.estado == true || lista.estado == null ? 'Activo' : 'Inactivo'}"
-                            th:classappend="${lista.estado == true || lista.estado == null ? 'border-success' : 'border-danger'}"></td>
+                            th:style="'background-color:' + ${lista.estado == true || lista.estado == null ? 'green' : 'red'}"></td>
+                        
+                        <td style="font-weight: bold;" th:text="${lista.blackListed == true || lista.blackListed == null ? 'BLACKLISTED' : 'NO'}"></td>
 
 
                         <td>
@@ -88,6 +91,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <div class="d-flex mb-3"> <!-- Mayor margen inferior -->
                                         <a th:href="@{/listaCandidatos/{nombreCandidato}/descargar-archivos(nombreCandidato=${lista.nombre})}" class="btn btn-primary flex-fill mx-2">Descargar Archivos</a>
                                         <a href="#" class="btn btn-danger flex-fill mx-2" th:data-id="${lista.id}" onclick="eliminar(this)">Eliminar candidato</a>
+                                        <a href="#" class="btn btn-outline-danger flex-fill mx-2" th:data-id="${lista.id}" onclick="cambiarBlackListed(this)">Cambia beto</a>
                                     </div>
                                     <div class="d-flex">
                                         <a href="#" class="btn btn-warning flex-fill mx-2" th:data-id="${lista.id}" onclick="cambiarEstado(this)">Cambiar estado</a>
@@ -112,8 +116,49 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     </div>
                                     <script th:inline="javascript">
+                                        
+                                        function cambiarBlackListed(element){
+                                            var id = element.getAttribute("data-id");
+                                            
+                                            fetch(`/cambiarBlackListed/${id}`)
+                                                    .then(response => {
+                                                        if(response.ok){
+                                                            return response.json();
+                                                        }else{
+                                                            throw new Error('Error al betar');
+                                                        }
+                                            })
+                                                    .then(data =>{
+                                                        var betar = data.clase;
+                                                        var mensaje = data.mensaje;
+                                                        if (betar === 'success') {
+                                                            Swal.fire({
+                                                                icon: "success",
+                                                                title: "Éxito",
+                                                                text: mensaje
+                                                            }).then(() => {
+                                                                setTimeout(() => {
+                                                                    location.reload();
+                                                                }, 0); // Espera 1 segundo antes de recargar
+                                                            });
+                                                        } else {
+                                                            Swal.fire({
+                                                                icon: "error",
+                                                                title: "Error",
+                                                                text: mensaje
+                                                            });
+                                                        }
+                                            })
+                                                    .catch(error =>{
+                                                        console.error("Error:", error);
+                                            });
+                                        }
+                                        
+                                        
+                                        
                                         function cambiarEstado(element) {
                                             var id = element.getAttribute("data-id");
+                                            
 
                                             fetch(`/cambiarEstado/${id}`)
                                                     .then(response => {
